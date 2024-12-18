@@ -1,66 +1,38 @@
 "use client";
 import NavButton from "@/components/NavButton/NavButton";
 import Link from "next/link";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import styles from "./Header.module.scss";
-import {motion} from "framer-motion";
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-const navItems = [
-  {
-    label: "About",
-    href: "#intro",
-  },
-  {
-    label: "Selected Works",
-    href: "#projects",
-  },
-  {
-    label: "Testimonials",
-    href: "#testimonials",
-  },
-  {
-    label: "FAQs",
-    href: "#faqs",
-  },
-  {
-    label: "Contact",
-    href: "#contact",
-  },
-];
-const menu = {
+import {AnimatePresence, motion} from "framer-motion";
+import Nav from "@/components/nav/Nav";
 
-  open: {
 
-      width: "480px",
-
-      height: "650px",
-
-      top: "-25px",
-
-      right: "-25px",
-
-      transition: { duration: 0.75, type: "tween", ease: [0.76, 0, 0.24, 1]}
-      
-
-  },
-
-  closed: {
-
-      width: "100px",
-
-      height: "40px",
-
-      top: "0px",
-
-      right: "0px",
-
-      transition: { duration: 0.75, delay: 0.35, type: "tween", ease: [0.76, 0, 0.24, 1]}
-
-  }
-
-}
 
 const Header: FC = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  const handleResize = () => setIsMobile(window.innerWidth <= 768);
+  window.addEventListener("resize", handleResize);
+  handleResize(); // Check initial size
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+const menu = {
+  open: {
+    width: isMobile ? "786px" :  "480px",
+    height: isMobile ?"1000px" :"550px",
+    top: isMobile ? "-25px" : '-10px',
+    right:  isMobile ? "-25px" : '-25px',
+    transition: { duration: 0.75, type: "tween", ease: [0.76, 0, 0.24, 1] },
+  },
+  closed: {
+    width: "100px",
+    height: "40px",
+    top: "0px",
+    right: "0px",
+    transition: { duration: 0.75, delay: 0.35, type: "tween", ease: [0.76, 0, 0.24, 1] },
+  },
+};
   const [isActive, setIsActive] = useState(false);
   return (
     <header className="fixed top-0 left-0 w-full backdrop-blur-md">
@@ -81,7 +53,12 @@ const Header: FC = () => {
                 animate={isActive ? "open" : "closed"}
 
                 initial="closed"
-              ></motion.div>
+              >
+                <AnimatePresence>
+
+                {isActive && <Nav/>}
+                </AnimatePresence>
+              </motion.div>
               <NavButton isActive={isActive} setIsActive={setIsActive} />
             </div>
 
