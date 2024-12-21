@@ -35,12 +35,12 @@ const menu = {
 };
   const [isActive, setIsActive] = useState(false);
   return (
-    <header className="fixed top-0 left-0 w-full backdrop-blur-md">
+    <header className="fixed top-0 left-0 w-full backdrop-blur-md z-50 ">
       <div className="container !max-w-full">
         <div className="flex justify-between h-20 items-center">
           <div>
             <Link href="/">
-              <span className="text-xl font-bold uppercase text-black-950">
+              <span className="text-xl font-bold uppercase text-black-950 md:text-lg">
                 Rayen&nbsp; El&nbsp; maamoun
               </span>
             </Link>
