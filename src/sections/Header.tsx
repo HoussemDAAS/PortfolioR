@@ -21,7 +21,7 @@ const menu = {
   open: {
     width: isMobile ? "786px" :  "480px",
     height: isMobile ?"1000px" :"550px",
-    top: isMobile ? "-25px" : '-10px',
+    top: isMobile ? "-27px" : '-10px',
     right:  isMobile ? "-25px" : '-25px',
     transition: { duration: 0.75, type: "tween", ease: [0.76, 0, 0.24, 1] },
   },
