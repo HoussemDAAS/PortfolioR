@@ -62,7 +62,7 @@ const Testimonials: FC = () => {
             <div
               key={index}
               className="
-        bg-orange-400 relative z-0 rounded-3xl p-6 overflow-hidden
+        bg-orange-400 relative -z-10 rounded-3xl p-6 overflow-hidden
          after:z-10 after:content-[''] after:absolute after::inset-0
           after::outline-2 after:outline after:-outline-offset-2 
           after:rounded-3xl after:outline-black-500 

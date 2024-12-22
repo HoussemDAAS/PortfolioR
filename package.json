@@ -9,10 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@studio-freight/lenis": "^1.0.42",
     "autoprefixer": "^10.4.20",
+    "framer-motion": "^11.15.0",
+    "gsap": "^3.12.5",
+    "lenis": "^1.1.18",
     "next": "15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "sass": "^1.83.0",
+    "smooth-scrollbar": "^8.8.4",
+    "split-type": "^0.3.4",
     "tailwind-merge": "^2.5.5"
   },
   "devDependencies": {

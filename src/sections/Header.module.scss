@@ -1,0 +1,19 @@
+.header {
+    position: relative;
+    justify-content: center;
+    align-items: center;
+  
+    .menu {
+      position: absolute;
+      width: 480px;
+      height: 650px;
+      background-color: #ff7518;
+      border-radius: 25px;
+      top: 0;
+      right: 0;
+  
+      // Add responsive styles for mobile
+    
+    }
+  }
+  
