@@ -1,4 +1,5 @@
 
+import Features from "@/sections/Features";
 import Header from "@/sections/Header";
 import Hero from "@/sections/Hero";
 import Intro from "@/sections/Intro";
@@ -13,6 +14,7 @@ export default function Home() {
      <Hero />
      <Intro />
      <Tape/>
+     <Features />
      <Projects /> 
      <Testimonials />
     </>
