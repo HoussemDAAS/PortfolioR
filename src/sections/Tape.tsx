@@ -29,7 +29,7 @@ const Tape = () => {
       
 
   return (
-    <div className="py-16 overflow-x-clip">
+    <div className="py-20 mt-12 overflow-x-clip">
       <div className="bg-gradient-to-r from-orange-500 to-orange-300 overflow-x-clip -rotate-3 -mx-1">
         <div className="flex [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
         <div className="flex flex-none gap-4 py-3  pr-4 -translate-x-1/2 animate-move-left [animation-duration:90s] md:[animation-duration:60s] hover:[animation-play-state:paused]"

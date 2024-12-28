@@ -15,6 +15,7 @@ import Orbit from "@/components/Orbit";
 import Logo from "@/assets/images/logoOrange.png";
 import Image from "next/image";
 import { motion } from "framer-motion";
+
 export const features = ["TEXXT 1", "TEXT 20", "TEXT 3"];
 
 export const logos = [
@@ -63,7 +64,9 @@ const Features = () => {
   return (
     <section className="py-16">
       <div className="container">
+    
         <div className="md:px-20 lg:px-40">
+      
           <div className="grid grid-cols-1 gap-20 lg:grid-cols-2">
             <div className="">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black-900 leading-tight">

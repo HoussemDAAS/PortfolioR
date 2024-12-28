@@ -3,6 +3,7 @@ import { FC } from "react";
 import heroImage from "@/assets/images/rayen.jpg";
 import Image from "next/image";
 import Button from "@/components/Button";
+import GlitchText from "@/components/GlitchText/GlitchText";
 
 const Hero: FC = () => {
   return (
@@ -14,7 +15,7 @@ const Hero: FC = () => {
 // }}
 >
 <div className="container !max-w-full">
-        <h1 className="text-5xl mt-40 text-black-900 uppercase md:text-6xl font-robert-medium lg:text-7xl">Crafting Visual Stories with Stunning VFX & Filmmaking</h1>
+        <h1 className="text-5xl mt-[6rem] text-black-900 uppercase md:text-6xl font-robert-medium lg:text-7xl">Crafting Visual Stories with Stunning VFX & Filmmaking</h1>
       <div className="flex flex-col mt-10 items-start gap-6 md:mt-10 md:flex-row md:items-center">
       <Button variant={"secondary"} iconAfter={<svg
             xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +34,7 @@ const Hero: FC = () => {
           <span> View My Work</span>
           
         </Button>
-        <Button variant={"text"}>Let&apos;s Talk</Button>
+        <Button variant={"text"}> <GlitchText text="Let&apos;s Talk" /></Button>
       </div>
       </div>
 </div>

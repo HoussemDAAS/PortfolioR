@@ -9,6 +9,7 @@ import Image from "next/image";
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 import Grain from "@/assets/images/grain.jpg";
 
+
 const testimonials = [
   {
     name: "Alex Turner",
@@ -47,9 +48,10 @@ const Testimonials: FC = () => {
     <div className="py-16 lg:py-24">
       <div className="container">
         <div className="flex justify-center">
-          <p className="uppercase font-semibold tracking-widest ">
+          {/* <p className="uppercase font-semibold tracking-widest ">
             Happy Clients
-          </p>
+          </p> */}
+          
         </div>
 
         <h2>What Clients say about Me</h2>
