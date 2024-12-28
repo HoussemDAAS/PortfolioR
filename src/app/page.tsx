@@ -5,6 +5,7 @@ import Header from "@/sections/Header";
 import Hero from "@/sections/Hero";
 import Intro from "@/sections/Intro";
 
+
 import Tape from "@/sections/Tape";
 import Testimonials from "@/sections/Testimonials";
 
@@ -106,7 +107,6 @@ export default function Home() {
   ];
   return (
     <>
-
      <Header />
     <div className="flex flex-col">
     <Hero />
