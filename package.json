@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@studio-freight/lenis": "^1.0.42",
     "autoprefixer": "^10.4.20",
+    "clsx": "^2.1.1",
     "framer-motion": "^11.15.0",
     "gsap": "^3.12.5",
     "lenis": "^1.1.18",
@@ -20,7 +23,7 @@
     "sass": "^1.83.0",
     "smooth-scrollbar": "^8.8.4",
     "split-type": "^0.3.4",
-    "tailwind-merge": "^2.5.5"
+    "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import './globals.css';
 import {Archivo} from 'next/font/google';
+import Preloader from "@/sections/Preloader";
 
 
 
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body
       className={`antialiased ${archivo.variable} font-sans`}
       >
+        <Preloader />
         {children}
       </body>
     </html>

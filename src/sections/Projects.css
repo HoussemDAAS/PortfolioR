@@ -59,7 +59,7 @@ section {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+ 
   height: 38px;
   transform: translateY(0px);
   background-color: #ff7518;
@@ -206,6 +206,7 @@ section {
     top: 5%;
     bottom: unset;
   }
+
   
 }
 
