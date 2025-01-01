@@ -41,3 +41,9 @@ body {
 .btn {
   @apply bg-orange-500 hover:bg-orange-700 text-white font-bold h-11 px-6 uppercase rounded-xl animate-pulse !important;
 }
+.line {
+  @apply overflow-hidden;
+}
+.word {
+  @apply translate-y-full;
+}

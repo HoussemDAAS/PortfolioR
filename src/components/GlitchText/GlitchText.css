@@ -1,10 +1,7 @@
 .glitch {
     color: #454545;
-  
     position: relative;
     margin: 0 auto;
- 
-    
   }
   .glitch::after {
     content: attr(data-text);
