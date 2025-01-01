@@ -5,6 +5,7 @@ import Footer from "@/sections/Footer";
 import Header from "@/sections/Header";
 import Hero from "@/sections/Hero";
 import Intro from "@/sections/Intro";
+import LogoTicker from "@/sections/Logoticker";
 
 
 import Tape from "@/sections/Tape";
@@ -111,6 +112,7 @@ export default function Home() {
      <Header />
     <div className="flex flex-col">
     <Hero />
+    <LogoTicker />
     <Intro />
      </div>
      <HeroParallax products={products} />

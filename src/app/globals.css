@@ -38,6 +38,11 @@ body {
     src: url("/fonts/zentry-regular.woff2") format("woff2");
   }
 }
+.hover\:filter-orange:hover img {
+  filter: brightness(0) saturate(100%) invert(54%) sepia(86%) saturate(374%) hue-rotate(340deg) brightness(103%) contrast(101%);
+  transition: filter 0.3s ease-in-out;
+}
+
 .btn {
   @apply bg-orange-500 hover:bg-orange-700 text-white font-bold h-11 px-6 uppercase rounded-xl animate-pulse !important;
 }
