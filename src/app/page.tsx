@@ -1,15 +1,18 @@
 
 import { HeroParallax } from "@/components/ui/hero-parrallax";
+import HeroServerComponent from "@/data-fetching/HeroServerComponent";
+
 import Features from "@/sections/Features";
 import Footer from "@/sections/Footer";
 import Header from "@/sections/Header";
-import Hero from "@/sections/Hero";
+
 import Intro from "@/sections/Intro";
 import LogoTicker from "@/sections/Logoticker";
 
 
 import Tape from "@/sections/Tape";
 import Testimonials from "@/sections/Testimonials";
+
 
 export default function Home() {
    const products = [
@@ -111,7 +114,7 @@ export default function Home() {
     <>
      <Header />
     <div className="flex flex-col">
-    <Hero />
+    <HeroServerComponent />
     <LogoTicker />
     <Intro />
      </div>

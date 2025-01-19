@@ -1,16 +1,30 @@
 "use client";
 import { FC, useEffect, useRef } from "react";
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-import heroImage from "@/assets/images/rayen2.jpg";
+
+
 import Image from "next/image";
 import Button from "@/components/Button";
 import GlitchText from "@/components/GlitchText/GlitchText";
 import SplitType from "split-type";
 import { useAnimate,motion, stagger, useScroll, useTransform } from "framer-motion";
+import { urlFor } from "@/sanity/imageUrl";
 
+interface HeroData {
+  backgroundImage: {
+    asset: {
+      _ref: string;
+      metadata: {
+        dimensions: {
+          width: number;
+          height: number;
+        };
+      };
+    };
+  };
+  title: string;
+}
 
-
-const Hero: FC = () => {
+const  Hero: FC<{ heroData: HeroData }> = ({ heroData }) =>  {
  const [titleScope,titleAnimate] = useAnimate();
  const scrollingDiv=useRef<HTMLDivElement>(null);
  const { scrollYProgress }=useScroll({
@@ -36,16 +50,13 @@ offset:["start end","end end"],
     <section>
       <div className="grid md:grid-cols-12 md:h-screen items-stretch sticky top-0" >
 <div className="md:col-span-7 flex flex-col justify-center bg-cover bg-center pb-10 md:pb-0"
-//  style={{
-//   backgroundImage: "url('/bgOrnge.jpg')",
-// }}
 >
 <div className="container !max-w-full">
         <motion.h1 className="text-5xl mt-[6rem] text-black-900 uppercase md:text-6xl font-robert-medium lg:text-7xl"
         initial={{opacity :0}}
         animate={{opacity :1}}
     
-        ref={titleScope}>Crafting Visual Stories with Stunning VFX & Filmmaking</motion.h1>
+        ref={titleScope}>{heroData.title}</motion.h1>
       <div className="flex flex-col mt-10 items-start gap-6 md:mt-10 md:flex-row md:items-center">
        <motion.div 
        initial={{opacity :0,y:'100%'}}
@@ -102,14 +113,21 @@ offset:["start end","end end"],
       </div>
 </div>
 <div className="md:col-span-5 relative">
-<motion.div className="mt-0 md:size-full md:absolute md:right-0 max-md:!w-full" 
-style={{width:portraitWidth,
-
-
-}}>
-        <Image src={heroImage} alt="Rayen El maamoun"  className="size-full object-cover"/>
-      </motion.div>
-</div>
+        <motion.div
+          className="mt-0 md:size-full md:absolute md:right-0 max-md:!w-full"
+          style={{ width: portraitWidth }}
+        >
+          <div className="relative w-full h-[500px] md:h-full"> {/* Ensure the parent container has a defined height */}
+            <Image
+              src={urlFor(heroData.backgroundImage).url()}
+              alt="Rayen El maamoun"
+              layout="fill"
+              objectFit="cover"
+              className="size-full"
+            />
+          </div>
+        </motion.div>
+      </div>
       </div>
       <div className="md:h-[200vh]" ref={scrollingDiv}></div>
 
