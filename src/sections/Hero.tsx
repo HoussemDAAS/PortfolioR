@@ -118,13 +118,13 @@ offset:["start end","end end"],
           style={{ width: portraitWidth }}
         >
           <div className="relative w-full h-[500px] md:h-full"> {/* Ensure the parent container has a defined height */}
-            <Image
-              src={urlFor(heroData.backgroundImage).url()}
-              alt="Rayen El maamoun"
-              layout="fill"
-              objectFit="cover"
-              className="size-full"
-            />
+         <Image
+                src={urlFor(heroData.backgroundImage).url()}
+                alt="Rayen El maamoun"
+                fill
+                style={{ objectFit: 'cover' }}
+                className="size-full"
+              />
           </div>
         </motion.div>
       </div>

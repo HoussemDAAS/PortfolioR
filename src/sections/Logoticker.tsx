@@ -1,28 +1,21 @@
 "use client";
 import React, { Fragment } from "react";
-import quantumLogo from "@/assets/images/quantum.svg";
-import acmeLogo from "@/assets/images/acme-corp.svg";
-import echoValleyLogo from "@/assets/images/echo-valley.svg";
-import pulseLogo from "@/assets/images/pulse.svg";
-import outsideLogo from "@/assets/images/outside.svg";
-import apexLogo from "@/assets/images/apex.svg";
-import celestialLogo from "@/assets/images/celestial.svg";
-import twiceLogo from "@/assets/images/twice.svg";
+import { urlFor } from "@/sanity/imageUrl";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-const logos = [
-  { name: "Quantum", image: quantumLogo },
-  { name: "Acme Corp", image: acmeLogo },
-  { name: "Echo Valley", image: echoValleyLogo },
-  { name: "Pulse", image: pulseLogo },
-  { name: "Outside", image: outsideLogo },
-  { name: "Apex", image: apexLogo },
-  { name: "Celestial", image: celestialLogo },
-  { name: "Twice", image: twiceLogo },
-];
-
-const LogoTicker = () => {
+interface Logo {
+  name: string;
+  image: {
+    asset: {
+      _ref: string;
+    };
+  };
+}
+interface LogoTickerProps {
+  logos: Logo[];
+}
+const LogoTicker: React.FC<LogoTickerProps> = ({ logos }) => {
   return (
     <section className="py-24 overflow-x-clip">
       <div className="container">
@@ -49,9 +42,11 @@ const LogoTicker = () => {
                     className="hover:filter-orange transition duration-300"
                   >
                     <Image
-                      src={logo.image}
-                      alt={logo.name}
-                      className="w-30 h-auto mx-auto"
+                        src={urlFor(logo.image).url()}
+                        alt={logo.name}
+                        width={120} // Adjust width as needed
+                        height={30} // Adjust height as needed
+                        className="w-30 h-auto mx-auto"
                     />
                   </div>
                 ))}
