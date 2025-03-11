@@ -110,7 +110,7 @@ const Footer: FC = () => {
                   </div>
                 }
               >
-                info@alextaylor.com
+                rayenelmaamoun@gmail.com
               </Button>
             </div>
             <div className="md:col-span-1">

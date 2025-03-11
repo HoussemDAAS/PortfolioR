@@ -8,8 +8,11 @@ export const structure: StructureResolver = (S) =>
       S.documentTypeListItem('hero').title('Hero').icon(() => '🦸‍♂️'),
       S.documentTypeListItem('logo').title('Componey they have trust in you ').icon(() => '🖼️'),
       S.documentTypeListItem('intro').title('Intro').icon(() => '📝'),
+      S.documentTypeListItem('product').title('Projects').icon(() => '📦'),
+      S.documentTypeListItem('tape').title('Tape').icon(() => '📼'),
+      S.documentTypeListItem('feature').title('Feature').icon(() => '🔥'),
       S.divider(),
       ...S.documentTypeListItems().filter(
-        (item) => item.getId() && !['hero', 'logo', 'intro'].includes(item.getId()!),
+        (item) => item.getId() && !['hero', 'logo', 'intro', 'product', 'tape', 'feature'].includes(item.getId()!),
       ),
     ])

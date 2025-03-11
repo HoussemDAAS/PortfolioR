@@ -16,7 +16,18 @@ import Logo from "@/assets/images/logoOrange.png";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
+interface Feature {
+  title: string;
+  text1: string;
+  text2: string;
+  text3: string;
+}
+
 export const features = ["TEXXT 1", "TEXT 20", "TEXT 3"];
+
+interface FeaturesProps {
+  featuresData: Feature;
+}
 
 export const logos = [
   {
@@ -60,32 +71,49 @@ export const logos = [
     rotate: 315,
   },
 ];
-const Features = () => {
+
+const Features: React.FC<FeaturesProps> = ({ featuresData }) => {
   return (
     <section className="py-16">
       <div className="container">
-    
         <div className="md:px-20 lg:px-40">
-      
+          {/* Animated Header Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-orange-500 mb-4">
+              Core Capabilities
+            </h2>
+            <p className="text-lg text-black-900 max-w-3xl mx-auto">
+              Precision Tools for Visual Excellence
+            </p>
+          </motion.div>
+
           <div className="grid grid-cols-1 gap-20 lg:grid-cols-2">
-            <div className="">
+            <div>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-black-900 leading-tight">
-                Your Vision is My Mission, and I&apos;ll Make It a Reality, with
-                My Cutting-Edge VFX and Filmmaking Skills
+                {featuresData.title}
               </h2>
               <ul className="mt-12 flex flex-col gap-8">
-                {features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-4">
-                    <FontAwesomeIcon
-                      icon={faCircleCheck}
-                      className="text-orange-500 size-6"
-                    />
-                    <span className="text-xl font-medium">{feature}</span>
-                  </li>
-                ))}
+                {[featuresData.text1, featuresData.text2, featuresData.text3].map(
+                  (text, index) => (
+                    <li key={index} className="flex items-center gap-4">
+                      <FontAwesomeIcon
+                        icon={faCircleCheck}
+                        className="text-orange-500 size-6"
+                      />
+                      <span className="text-xl font-medium">{text}</span>
+                    </li>
+                  )
+                )}
               </ul>
             </div>
-            <div className="flex justify-center ">
+            
+            <div className="flex justify-center">
               <div className="size-[270px] md:size-[450px] relative flex-shrink-0">
                 <div className="absolute inset-0">
                   <Orbit className="size-full" />
@@ -104,7 +132,7 @@ const Features = () => {
                 </div>
                 {logos.map((logo, index) => (
                   <motion.div
-                    className=" absolute inset-0"
+                    className="absolute inset-0"
                     initial={{ rotate: logo.rotate }}
                     animate={{
                       rotate: [
@@ -134,27 +162,27 @@ const Features = () => {
                       className="outline outline-1 outline-black-500 inline-flex size-10 md:size-14 items-center justify-center border-orange-500 rounded-lg absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2"
                       initial={{
                         translate: `-50% -50%`,
-                        rotate:-logo.rotate
+                        rotate: -logo.rotate,
                       }}
                       animate={{
                         rotate: [
-                          - logo.rotate,
-                         - logo.rotate - 45,
-                          - logo.rotate - 45,
-                          - logo.rotate - 90,
-                          - logo.rotate - 90,
-                          - logo.rotate - 135,
-                          - logo.rotate - 135,
-                          - logo.rotate - 180,
-                          - logo.rotate - 180,
-                          - logo.rotate - 225,
-                          - logo.rotate - 225,
-                          - logo.rotate - 270,
-                          - logo.rotate - 270,
-                          - logo.rotate - 315,
-                          - logo.rotate - 315,
-                          - logo.rotate - 360,
-                          - logo.rotate - 360,
+                          -logo.rotate,
+                          -logo.rotate - 45,
+                          -logo.rotate - 45,
+                          -logo.rotate - 90,
+                          -logo.rotate - 90,
+                          -logo.rotate - 135,
+                          -logo.rotate - 135,
+                          -logo.rotate - 180,
+                          -logo.rotate - 180,
+                          -logo.rotate - 225,
+                          -logo.rotate - 225,
+                          -logo.rotate - 270,
+                          -logo.rotate - 270,
+                          -logo.rotate - 315,
+                          -logo.rotate - 315,
+                          -logo.rotate - 360,
+                          -logo.rotate - 360,
                         ],
                       }}
                       transition={{ duration: 10, repeat: Infinity }}

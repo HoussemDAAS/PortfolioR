@@ -34,7 +34,8 @@
     "smooth-scrollbar": "^8.8.4",
     "split-type": "^0.3.4",
     "styled-components": "^6.1.14",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

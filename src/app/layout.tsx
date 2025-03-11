@@ -26,7 +26,7 @@ export default function RootLayout({
       <body
       className={`antialiased ${archivo.variable} font-sans`}
       >
-        {/* <Preloader /> */}
+         <Preloader />
         {children}
       </body>
     </html>

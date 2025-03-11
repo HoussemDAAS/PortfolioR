@@ -1,152 +1,118 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring,
-  MotionValue,
-} from "framer-motion";
-
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import Link from "next/link";
 
-export const HeroParallax = ({products,}: {products: { title: string; link: string;thumbnail: string; }[];}) => {
-  const firstRow = products.slice(0, 5);
-  const secondRow = products.slice(5, 10);
-  const thirdRow = products.slice(10, 15);
-  const ref = React.useRef(null);
+interface Product {
+  title: string;
+  link: string;
+  thumbnail: {
+    asset: {
+      url: string;
+    };
+  };
+}
+
+interface HeroParallaxProps {
+  products: Product[];
+}
+
+export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
+  const ref = React.useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
 
-  const springConfig = { stiffness: 300, damping: 30, bounce: 100 };
+  const translateY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 200]));
 
-  const translateX = useSpring(
-    useTransform(scrollYProgress, [0, 1], [0, 1000]),
-    springConfig
-  );
-  const translateXReverse = useSpring(
-    useTransform(scrollYProgress, [0, 1], [0, -1000]),
-    springConfig
-  );
-  const rotateX = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [15, 0]),
-    springConfig
-  );
-  const opacity = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [0.2, 1]),
-    springConfig
-  );
-  const rotateZ = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [20, 0]),
-    springConfig
-  );
-  const translateY = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [-700, 500]),
-    springConfig
-  );
   return (
     <div
       ref={ref}
-       className="h-[200vh] md:h-[300vh] py-20 md:py-30 overflow-hidden antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d]"
+      className="w-full overflow-hidden relative bg-black-100"
+      style={{ height: `${Math.ceil(products.length / 4) * 100}vh` }}
     >
-      <HeaderProject />
-      <motion.div
-        style={{
-          rotateX,
-          rotateZ,
-          translateY,
-          opacity,
-        }}
-        className=""
+      {/* Project Title Section */}
+      <section className="relative pt-20 pb-12 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-7xl mx-auto text-center"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-orange-500 mb-4">
+            Aerial Visual Stories
+          </h1>
+          <p className="text-lg text-black-900 max-w-3xl mx-auto">
+            Cinematic moments captured from above
+          </p>
+        </motion.div>
+      </section>
+
+      {/* Compact Grid Container */}
+      <motion.div 
+        style={{ translateY }}
+        className="mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-2 max-w-7xl"
       >
-        <motion.div className="flex flex-row-reverse space-x-reverse space-x-20 mb-20">
-          {firstRow.map((product) => (
-            <ProductCard
-              product={product}
-              translate={translateX}
-              key={product.title}
-            />
-          ))}
-        </motion.div>
-        <motion.div className="flex flex-row  mb-20 space-x-20 ">
-          {secondRow.map((product) => (
-            <ProductCard
-              product={product}
-              translate={translateXReverse}
-              key={product.title}
-            />
-          ))}
-        </motion.div>
-        <motion.div className="flex flex-row-reverse space-x-reverse space-x-20">
-          {thirdRow.map((product) => (
-            <ProductCard
-              product={product}
-              translate={translateX}
-              key={product.title}
-            />
-          ))}
-        </motion.div>
+        {products.map((product, index) => (
+          <ReelCard
+            key={product.title}
+            product={product}
+            index={index}
+          />
+        ))}
       </motion.div>
     </div>
   );
 };
 
-export const HeaderProject = () => {
-  return (
-    <div className="max-w-7xl relative mx-auto py-20 md:py-40 px-4 w-full left-0 top-0">
-    <h1 className="text-2xl md:text-7xl font-bold  text-orange-600">
-      Capturing the Sky, <br /> Crafting the Story
-    </h1>
-    <p className="max-w-2xl text-base md:text-xl mt-8   text-black-900">
-      From breathtaking drone footage to cinematic visual effects, we turn ideas into stunning visuals. 
-      Explore the art of storytelling through the lens of a drone and the magic of VFX.
-    </p>
-  </div>
-  
-  );
-};
-
-export const ProductCard = ({
+const ReelCard: React.FC<{ product: Product; index: number }> = ({
   product,
-  translate,
-}: {
-  product: {
-    title: string;
-    link: string;
-    thumbnail: string;
-  };
-  translate: MotionValue<number>;
 }) => {
+  const [isHovered, setIsHovered] = React.useState(false);
+
   return (
     <motion.div
-      style={{
-        x: translate,
-      }}
-      whileHover={{
-        y: -20,
-      }}
-      key={product.title}
-      className="group/product w-[250px] h-[30rem] relative flex-shrink-0"
+      className="group relative aspect-[9/16] w-full overflow-hidden rounded-lg cursor-pointer"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
     >
-      <Link
-        href={product.link}
-        className="block group-hover/product:shadow-2xl "
-      >
-         <video
-          src={product.thumbnail} // Use the video source from the product object
+      <Link href={product.link} target="_blank" rel="noopener noreferrer">
+        <video
+          src={product.thumbnail.asset.url}
           muted
           autoPlay
           loop
           playsInline
-          className="object-cover object-left-top absolute h-full w-full inset-0"
+          className="object-cover w-full h-full absolute inset-0"
         />
+
+        {/* Subtle Overlay */}
+        <motion.div
+          className="absolute inset-0 bg-black/40"
+          animate={{ opacity: isHovered ? 0.6 : 0.3 }}
+        />
+
+        {/* Title */}
+        <motion.h2
+          className="absolute bottom-2 left-2 text-white text-sm font-medium"
+          animate={{ y: isHovered ? 0 : 10, opacity: isHovered ? 1 : 0 }}
+        >
+          {product.title}
+        </motion.h2>
+
+        {/* Orange Play Indicator */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          animate={{ scale: isHovered ? 1 : 0, opacity: isHovered ? 1 : 0 }}
+        >
+          <div className="w-12 h-12 bg-orange-500/90 rounded-full flex items-center justify-center">
+            <div className="w-0 h-0 border-t-6 border-b-6 border-l-8 border-transparent border-l-white" />
+          </div>
+        </motion.div>
       </Link>
-      <div className="absolute inset-0 h-full w-full opacity-0 group-hover/product:opacity-80 bg-black pointer-events-none"></div>
-      <h2 className="absolute bottom-4 left-4 opacity-0 group-hover/product:opacity-100 text-orange-600 font-semibold ">
-        {product.title}
-      </h2>
     </motion.div>
   );
 };

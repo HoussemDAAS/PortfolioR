@@ -1,9 +1,11 @@
+/* Original desktop styles remain unchanged */
 body.loading,
 html.loading {
     overflow: hidden;
-    height: 100%; /* Ensures no scrollbars appear */
+    height: 100%;
 }
-.loading-screen{
+
+.loading-screen {
     position: fixed;
     top: 0;
     left: 0;
@@ -15,6 +17,7 @@ html.loading {
     pointer-events: none;
     z-index: 9999;
 }
+
 .counter {
     position: fixed;
     left: 50px;
@@ -28,6 +31,7 @@ html.loading {
     color: #ff7518;
     z-index: 10000;
 }
+
 .counter-1,
 .counter-2,
 .counter-3 {
@@ -55,6 +59,7 @@ html.loading {
     display: flex;
     background: rgb(80, 80, 80);
 }
+
 .loader-1 {
     position: relative;
     background: #fff;
@@ -69,4 +74,44 @@ html.loading {
 
 .bar {
     height: 50px;
+}
+
+@media (max-width: 768px) {
+    .counter {
+        left: 20px;
+        bottom: 20px;
+        height: 60px;  /* Reduced proportionally */
+        font-size: 40px;
+        line-height: 60px;  /* Must match height */
+        clip-path: polygon(0 0, 100% 0, 100% 60px, 0 60px);  /* Match height */
+    }
+
+    .counter-1,
+    .counter-2,
+    .counter-3 {
+        top: -7px;  /* Half of original -15px adjustment */
+    }
+
+    .num1offset1 {
+        right: -12px;  /* Half of original -25px */
+    }
+
+    .num1offset2 {
+        right: -5px;  /* Half of original -10px */
+    }
+
+    /* Keep loader adjustments the same */
+    .loader {
+        width: 90%;
+        max-width: 300px;
+        height: 5vh;
+    }
+
+    .loader-1 {
+        width: 66.66%;
+    }
+
+    .loader-2 {
+        width: 33.33%;
+    }
 }
