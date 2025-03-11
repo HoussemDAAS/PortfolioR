@@ -1,3 +1,4 @@
+"use client";
 import { FC, Fragment } from "react";
 
 import memojiAvatar1 from "@/assets/images/memoji-avatar-1.png";
@@ -8,6 +9,7 @@ import memojiAvatar5 from "@/assets/images/memoji-avatar-5.png";
 import Image from "next/image";
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 import Grain from "@/assets/images/grain.jpg";
+import { motion } from "framer-motion";
 
 
 const testimonials = [
@@ -47,15 +49,20 @@ const Testimonials: FC = () => {
   return (
     <div className="py-16 lg:py-24">
       <div className="container">
-        <div className="flex justify-center">
-          {/* <p className="uppercase font-semibold tracking-widest ">
-            Happy Clients
-          </p> */}
-          
-        </div>
-
-        <h2>What Clients say about Me</h2>
-        <p>Trusted by Creators, Directors, and Visionaries</p>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-orange-500 mb-4">
+            What Clients Say About Me
+          </h2>
+          <p className="text-lg text-black-900 max-w-3xl mx-auto">
+            Trusted by Creators, Directors, and Visionaries
+          </p>
+        </motion.div>
         <div className="mt-12  lg:mt-20 flex overflow-x-clip py-4 -my-4 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
           <div className="flex flex-none gap-8 animate-move-left [animation-duration:90s] md:[animation-duration:60s] hover:[animation-play-state:paused]">
             {[...new Array(2)].fill(0).map((_, index) => (

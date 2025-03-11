@@ -1,125 +1,47 @@
-
-import { HeroParallax } from "@/components/ui/hero-parrallax";
-import Features from "@/sections/Features";
+// app/page.tsx
+import FeatureServerComponent from "@/data-fetching/FeatureServerComponent";
+import ProductParallaxServerComponent from "@/data-fetching/HeroParallaxServerComponent";
+import HeroServerComponent from "@/data-fetching/HeroServerComponent";
+import IntroServerComponent from "@/data-fetching/IntroServerComponent";
+import LogoTickerServerComponent from "@/data-fetching/LogoTickerServerComponent";
+import TapeServerComponent from "@/data-fetching/TapeServerComponent";
+import Footer from "@/sections/Footer";
 import Header from "@/sections/Header";
-import Hero from "@/sections/Hero";
-import Intro from "@/sections/Intro";
-
-
-import Tape from "@/sections/Tape";
 import Testimonials from "@/sections/Testimonials";
+import { AnimatedSection } from "@/components/AnimatedSection";
 
 export default function Home() {
-   const products = [
-    {
-      title: "Tunisia through my eyes",
-      link: "https://www.instagram.com/reel/C3f-x9HNPMw/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-      thumbnail:
-        "/videos/video2.mp4",
-    },
-    {
-      title: "Abtal unboxing",
-      link: "https://www.instagram.com/rayenelmaamoun/reel/DDUcXDNNA8G/",
-      thumbnail:
-        "/videos/video3.mp4",
-    },
-    {
-      title: "Itel teaser",
-      link: "https://www.instagram.com/rayenelmaamoun/reel/DDSJDQDtIPy/",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-   
-    {
-      title: "mayseen parfum",
-      link: "https://www.instagram.com/rayenelmaamoun/reel/DCHjTpaNrP2/",
-      thumbnail:
-        "/videos/video4.mp4",
-    },
-    {
-      title: "Editrix AI",
-      link: "https://editrix.ai",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-    {
-      title: "Pixel Perfect",
-      link: "https://app.pixelperfect.quest",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-   
-    {
-      title: "Algochurn",
-      link: "https://algochurn.com",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-    {
-      title: "Aceternity UI",
-      link: "https://ui.aceternity.com",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-    {
-      title: "Tailwind Master Kit",
-      link: "https://tailwindmasterkit.com",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-    {
-      title: "SmartBridge",
-      link: "https://smartbridgetech.com",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-    {
-      title: "Renderwork Studio",
-      link: "https://renderwork.studio",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-   
-    {
-      title: "Creme Digital",
-      link: "https://cremedigital.com",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-    {
-      title: "Golden Bells Academy",
-      link: "https://goldenbellsacademy.com",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-    {
-      title: "Invoker Labs",
-      link: "https://invoker.lol",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-    {
-      title: "E Free Invoice",
-      link: "https://efreeinvoice.com",
-      thumbnail:
-        "/videos/video.mp4",
-    },
-  ];
   return (
     <>
-     <Header />
-    <div className="flex flex-col">
-    <Hero />
-    <Intro />
-     </div>
-     <HeroParallax products={products} />
-     
-     <Tape/>
-     <Features />
-    
-     {/* <Projects />  */}
-     <Testimonials />
-     {/* <Portfolio />   */}
+      <Header />
+      <HeroServerComponent />
+
+      <div className="flex flex-col gap-16 md:gap-24">
+        <AnimatedSection>
+          <LogoTickerServerComponent />
+        </AnimatedSection>
+
+        <AnimatedSection>
+          <IntroServerComponent />
+        </AnimatedSection>
+
+        {/* Parallax section needs to be client component */}
+        <ProductParallaxServerComponent />
+
+        <AnimatedSection>
+          <TapeServerComponent />
+        </AnimatedSection>
+
+        <AnimatedSection>
+          <FeatureServerComponent />
+        </AnimatedSection>
+
+        <AnimatedSection>
+          <Testimonials />
+        </AnimatedSection>
+      </div>
+
+      <Footer />
     </>
   );
 }
