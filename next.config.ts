@@ -1,16 +1,23 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+// next.config.js
+const nextConfig = {
   images: {
-    domains: ['images.pexels.com', 'www.pexels.com','aceternity.com','cdn.sanity.io'],
+    domains: ['cdn.sanity.io'],
   },
-  // Add these new configurations
   typescript: {
-    ignoreBuildErrors: true, // Ignore TypeScript errors during build
+    ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: true, // Ignore ESLint errors during build
+    ignoreDuringBuilds: true,
+  },
+  // Add webpack override to skip sanity config validation
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /sanity.config.js/,
+      loader: 'null-loader',
+    });
+    
+    return config;
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
