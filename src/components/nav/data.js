@@ -1,19 +1,19 @@
 export const links = [
     {
         title: "About",
-        href: "/"
+        href: "#about"
     },
     {
         title: "Projects",
-        href: "/"
+        href: "#projects"
     },
     {
         title: "Social media",
-        href: "/"
+        href: "#social-media"
     },
     {
         title: "Contact",
-        href: "/"
+        href: "#contact"
     },
 
 ]
@@ -23,7 +23,7 @@ export const footerLinks = [
   
         title: "Facebook",
   
-        href: "/"
+        href: "https://www.facebook.com/profile.php?id=61556346484595"
   
     },
   
@@ -31,7 +31,7 @@ export const footerLinks = [
   
         title: "Titkok",
   
-        href: "/"
+        href: "https://www.tiktok.com/@rayenelmaamoun"
   
     },
   
@@ -39,7 +39,7 @@ export const footerLinks = [
   
         title: "Instagram",
   
-        href: "/"
+        href: "https://www.instagram.com/rayenelmaamoun/"
   
     },
   

@@ -8,7 +8,6 @@
   box-sizing: border-box;
 }
 
-/* globals.css */
 html,
 body {
   max-width: 100%;
@@ -21,7 +20,6 @@ body {
   flex-direction: column;
   overflow: hidden;
 }
-
 body.loading {
   overflow: hidden;
   height: 100vh;

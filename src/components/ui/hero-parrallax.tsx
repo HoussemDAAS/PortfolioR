@@ -28,7 +28,8 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
   const translateY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 200]));
 
   return (
-    <div
+    <div 
+    id="projects"
       ref={ref}
       className="w-full overflow-hidden relative bg-black-100"
       style={{ height: `${Math.ceil(products.length / 4) * 100}vh` }}

@@ -10,9 +10,10 @@ import Header from "@/sections/Header";
 import Testimonials from "@/sections/Testimonials";
 import { AnimatedSection } from "@/components/AnimatedSection";
 
+
 export default function Home() {
   return (
-    <main className="flex-1 overflow-hidden">
+    <>
       <Header /> 
       <HeroServerComponent />
 
@@ -31,7 +32,7 @@ export default function Home() {
         <AnimatedSection>
           <TapeServerComponent />
         </AnimatedSection>
-
+     
         <AnimatedSection>
           <FeatureServerComponent />
         </AnimatedSection>
@@ -42,7 +43,7 @@ export default function Home() {
       </div>
 
       <Footer />
-      <div className="flex flex-col gap-16 md:gap-24 overflow-hidden" />
-    </main>
+      {/* <div className="flex flex-col gap-16 md:gap-24 overflow-hidden" /> */}
+    </>
   );
 }
