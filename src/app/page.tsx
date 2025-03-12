@@ -12,21 +12,21 @@ import { AnimatedSection } from "@/components/AnimatedSection";
 
 export default function Home() {
   return (
-    <>
-      <Header />
-      <HeroServerComponent />
+    <main className="flex-1 overflow-hidden">
+      {/* <Header /> */}
+      {/* <HeroServerComponent /> */}
 
       <div className="flex flex-col gap-16 md:gap-24">
-        <AnimatedSection>
+        {/* <AnimatedSection>
           <LogoTickerServerComponent />
         </AnimatedSection>
 
         <AnimatedSection>
           <IntroServerComponent />
-        </AnimatedSection>
+        </AnimatedSection> */}
 
         {/* Parallax section needs to be client component */}
-        <ProductParallaxServerComponent />
+        {/* <ProductParallaxServerComponent /> */}
 
         <AnimatedSection>
           <TapeServerComponent />
@@ -42,6 +42,7 @@ export default function Home() {
       </div>
 
       <Footer />
-    </>
+      <div className="flex flex-col gap-16 md:gap-24 overflow-hidden" />
+    </main>
   );
 }
