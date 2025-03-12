@@ -13,17 +13,17 @@ import { AnimatedSection } from "@/components/AnimatedSection";
 export default function Home() {
   return (
     <main className="flex-1 overflow-hidden">
-      {/* <Header /> */}
-      {/* <HeroServerComponent /> */}
+      <Header /> 
+      <HeroServerComponent />
 
       <div className="flex flex-col gap-16 md:gap-24">
-        {/* <AnimatedSection>
+        <AnimatedSection>
           <LogoTickerServerComponent />
         </AnimatedSection>
 
         <AnimatedSection>
           <IntroServerComponent />
-        </AnimatedSection> */}
+        </AnimatedSection>
 
         {/* Parallax section needs to be client component */}
         <ProductParallaxServerComponent />
