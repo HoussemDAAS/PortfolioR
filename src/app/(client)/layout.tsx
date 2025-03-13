@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import './globals.css';
+import "../globals.css";
 import {Archivo} from 'next/font/google';
 import Preloader from "@/sections/Preloader";
 import SocialDock from "@/sections/SocialDock";
