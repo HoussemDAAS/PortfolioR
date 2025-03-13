@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
     domains: ['cdn.sanity.io'],
   },
@@ -12,12 +13,22 @@ module.exports = {
     webpackBuildWorker: true,
     serverComponentsExternalPackages: ['@sanity/*'],
   },
-  webpack: (config) => {
-    // Bypass sanity config validation
+  webpack: (config, { isServer }) => {
+    // Add null-loader for Sanity Studio files
     config.module.rules.push({
-      test: /sanity\.config\.(js|ts)/,
-      use: 'null-loader',
+      test: /sanity\.(ts|js)/,
+      use: 'null-loader'
     });
+
+    // Add custom loader configuration
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+
+    // Important: Return the modified config
     return config;
   }
 }
+
+module.exports = nextConfig
