@@ -9,6 +9,7 @@ import Footer from "@/sections/Footer";
 import Header from "@/sections/Header";
 import Testimonials from "@/sections/Testimonials";
 import { AnimatedSection } from "@/components/AnimatedSection";
+import Contact from "@/sections/Contact";
 
  //src/app/(client)/page.tsx
 export default function Home() {
@@ -28,7 +29,10 @@ export default function Home() {
 
         {/* Parallax section needs to be client component */}
         <ProductParallaxServerComponent />
-
+  
+  <AnimatedSection>
+  <Contact />
+        </AnimatedSection>
         <AnimatedSection>
           <TapeServerComponent />
         </AnimatedSection>
