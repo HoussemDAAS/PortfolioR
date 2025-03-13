@@ -64,3 +64,15 @@ body.loading {
 .word {
   @apply translate-y-full;
 }
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;  /* Firefox */
+  
+  /* Chrome/Safari/Opera */
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+}

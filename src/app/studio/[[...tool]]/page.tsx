@@ -7,23 +7,23 @@
  * https://github.com/sanity-io/next-sanity
  */
 
-// import { NextStudio } from 'next-sanity/studio'
-// import config from '../../../../sanity.config'
+import { NextStudio } from 'next-sanity/studio'
+import config from '../../../../sanity.config'
 
-// export const dynamic = 'force-static'
+export const dynamic = 'force-static'
 
-// export { metadata, viewport } from 'next-sanity/studio'
-
-// export default function StudioPage() {
-//   return <NextStudio config={config} />
-// }
-'use client'
+export { metadata, viewport } from 'next-sanity/studio'
 
 export default function StudioPage() {
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Studio temporarily disabled</h1>
-      <p>Sanity studio configuration bypassed for preview</p>
-    </div>
-  )
+  return <NextStudio config={config} />
 }
+// 'use client'
+
+// export default function StudioPage() {
+//   return (
+//     <div style={{ padding: 20 }}>
+//       <h1>Studio temporarily disabled</h1>
+//       <p>Sanity studio configuration bypassed for preview</p>
+//     </div>
+//   )
+// }
