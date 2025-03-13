@@ -4,7 +4,7 @@ import {Archivo} from 'next/font/google';
 import Preloader from "@/sections/Preloader";
 import SocialDock from "@/sections/SocialDock";
 
-
+//src/app/(client)/layout.tsx
 
 const archivo = Archivo({
   display: 'swap',
