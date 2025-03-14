@@ -28,7 +28,7 @@ export default function RootLayout({
       className={`antialiased ${archivo.variable} font-sans`}
       >
         
-         {/* <Preloader /> */}
+         <Preloader />
         {children}
         <SocialDock />
       </body>

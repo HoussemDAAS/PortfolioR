@@ -37,6 +37,7 @@
     "sass": "^1.83.0",
     "sharp": "^0.33.5",
     "smooth-scrollbar": "^8.8.4",
+    "sonner": "^2.0.1",
     "split-type": "^0.3.4",
     "styled-components": "^6.1.15",
     "tailwind-merge": "^2.6.0",

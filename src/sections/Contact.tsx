@@ -3,6 +3,8 @@ import { motion, useInView } from "framer-motion";
 import { FC, useRef, useEffect, useState } from "react";
 import GlitchText from "@/components/GlitchText/GlitchText";
 import Button from "@/components/Button";
+import { client } from "@/sanity/lib/client";
+import { toast, Toaster } from "sonner";
 
 interface Particle {
   id: number;
@@ -12,10 +14,24 @@ interface Particle {
   height: number;
 }
 
+interface FormData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 const Contact: FC = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px 0px" });
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     setParticles(
@@ -55,11 +71,57 @@ const Contact: FC = () => {
   };
 
   const formFields = [
-    { type: 'text', label: 'Full Name', placeholder: 'John Doe', colSpan: '' },
-    { type: 'email', label: 'Email Address', placeholder: 'john@example.com', colSpan: '' },
-    { type: 'text', label: 'Subject', placeholder: 'Project Inquiry', colSpan: 'md:col-span-2' },
-    { type: 'textarea', label: 'Message', placeholder: 'Your message...', colSpan: 'md:col-span-2' },
+    { type: 'text', name: 'name', label: 'Full Name', placeholder: 'John Doe' },
+    { type: 'email', name: 'email', label: 'Email Address', placeholder: 'john@example.com' },
+    { type: 'text', name: 'subject', label: 'Subject', placeholder: 'Project Inquiry', colSpan: 'md:col-span-2' },
+    { type: 'textarea', name: 'message', label: 'Message', placeholder: 'Your message...', colSpan: 'md:col-span-2' },
   ];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    
+    try {
+      await client.create({
+        _type: 'contact',
+        ...formData,
+        _createdAt: new Date().toISOString()
+      });
+
+      toast.custom((t) => (
+        <div className="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center gap-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span>Message sent successfully!</span>
+        </div>
+      ));
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      console.error('Submission error:', error);
+      toast.error('Failed to send message. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const isFormValid = Object.values(formData).every(value => value.trim() !== '');
 
   return (
     <section 
@@ -67,6 +129,7 @@ const Contact: FC = () => {
       className="relative py-20 bg-black-100 overflow-hidden"
       ref={ref}
     >
+         <Toaster position="top-center" richColors />
       <motion.div 
         className="absolute inset-0 -z-20 opacity-10"
         initial={{ scale: 0.8 }}
@@ -103,6 +166,7 @@ const Contact: FC = () => {
           animate={isInView ? "visible" : "hidden"}
           className="max-w-2xl mx-auto relative"
           style={{ perspective: 1000 }}
+          onSubmit={handleSubmit}
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -116,28 +180,36 @@ const Contact: FC = () => {
               <motion.div 
                 key={i}
                 variants={itemVariants}
-                className={field.colSpan}
+                className={field.colSpan || ''}
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <label className="block text-gray-500 mb-2">{field.label}</label>
                 {field.type === 'textarea' ? (
                   <textarea
+                    name={field.name}
+                    value={formData[field.name as keyof FormData]}
+                    onChange={handleChange}
                     className="w-full bg-black-200/20 rounded-xl px-6 py-4 
                       border-2 border-gray-800 focus:border-gray-500 
                       focus:ring-2 focus:ring-gray-500/30 transition-all
                       hover:shadow-lg hover:shadow-gray-500/10"
                     placeholder={field.placeholder}
                     rows={4}
+                    required
                   />
                 ) : (
                   <input
                     type={field.type}
+                    name={field.name}
+                    value={formData[field.name as keyof FormData]}
+                    onChange={handleChange}
                     className="w-full bg-black-200/20 rounded-xl px-6 py-4 
                       border-2 border-gray-800 focus:border-gray-500 
                       focus:ring-2 focus:ring-gray-500/30 transition-all
                       hover:shadow-lg hover:shadow-gray-500/10"
                     placeholder={field.placeholder}
+                    required
                   />
                 )}
               </motion.div>
@@ -148,40 +220,43 @@ const Contact: FC = () => {
               className="md:col-span-2 mt-6"
               whileHover={{ scale: 1.02 }}
             >
-              <Button
-                variant="secondary"
-                className="w-full group bg-gradient-to-r from-orange-600 to-orange-700 hover:to-orange-800"
-                iconAfter={
-                  <motion.div 
-                    className="size-5 text-orange-500"
-                    initial={{ x: 0 }}
-                    whileHover={{ 
-                      x: 5,
-                      rotate: [0, 15, -15, 0],
-                      transition: { duration: 0.6 }
-                    }}
+            <Button
+            type="submit"
+            variant={"secondary"}
+            className={`w-full group ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={submitting || !isFormValid}
+            iconAfter={
+              <div className="size-8 flex items-center justify-center">
+                <motion.div 
+                  className="size-5 text-black-800"
+                  initial={{ y: 0 }}
+                  animate={{
+                    y: submitting ? 0 : [0, 5, 0],
+                    transition: { repeat: Infinity, duration: 1.5 }
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="size-5"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="size-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-                      />
-                    </svg>
-                  </motion.div>
-                }
-              >
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-orange-100">
-                  Send Message
-                </span>
-              </Button>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
+                    />
+                  </svg>
+                </motion.div>
+              </div>
+            }
+          >
+            <span className=" ">
+              {submitting ? 'Sending...' : 'Send Message'}
+            </span>
+          </Button>
             </motion.div>
           </div>
         </motion.form>

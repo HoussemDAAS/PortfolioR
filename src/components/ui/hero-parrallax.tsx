@@ -4,7 +4,6 @@
 import React, { useRef, useEffect, useCallback, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import Link from "next/link";
-import { FaPause, FaPlay } from "react-icons/fa";
 
 interface Product {
   title: string;
@@ -267,9 +266,9 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
                   className="text-white hover:text-orange-500 transition-colors"
                 >
                   {isPlaying ? (
-                   <FaPause className="w-5 h-5" />
+                    <span className="text-xl">⏸</span>
                   ) : (
-                    <FaPlay className="w-5 h-5" />
+                    <span className="text-xl">▶</span>
                   )}
                 </button>
 

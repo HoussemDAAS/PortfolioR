@@ -11,9 +11,11 @@ export const structure: StructureResolver = (S) =>
       S.documentTypeListItem('product').title('Projects').icon(() => '📦'),
       S.documentTypeListItem('tape').title('Tape').icon(() => '📼'),
       S.documentTypeListItem('feature').title('Feature').icon(() => '🔥'),
-      S.documentTypeListItem('testimonial').title('Testimonials').icon(() => '💬'), // New entry
+      S.documentTypeListItem('testimonial').title('Testimonials').icon(() => '💬'),
+      S.documentTypeListItem('contact').title('Contacts').icon(() => '📞'),
+       // New entry
       S.divider(),
       ...S.documentTypeListItems().filter(
-        (item) => item.getId() && !['hero', 'logo', 'intro', 'product', 'tape', 'feature', 'testimonial'].includes(item.getId()!),
+        (item) => item.getId() && !['hero', 'logo', 'intro', 'product', 'tape', 'feature', 'testimonial', 'contact'].includes(item.getId()!),
       ),
     ])
