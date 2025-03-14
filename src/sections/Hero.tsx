@@ -58,7 +58,9 @@ const Hero: FC<{ heroData: HeroData }> = ({ heroData }) => {
               </div>
               <div>
                 <Button variant={"text"}>
+                  <Link href="#contact">
                   <GlitchText text="Let&apos;s Talk" />
+                  </Link>
                 </Button>
               </div>
             </div>

@@ -1,27 +1,28 @@
-import { visionTool } from '@sanity/vision';
-import { defineConfig } from 'sanity';
-import { structureTool } from 'sanity/structure';
-import { schema } from './src/sanity/schemaTypes';
+'use client'
 
-// Hardcoded values for testing
-const projectId = '1qcydod7'; // Double-check this matches exactly what's in Sanity dashboard
-const dataset = 'production';
-const apiVersion = '2025-01-18';
+/**
+ * This configuration is used to for the Sanity Studio that’s mounted on the `\src\app\studio\[[...tool]]\page.tsx` route
+ */
 
-// Validate project ID format
-if (!/^[a-z0-9-]+$/.test(projectId)) {
-  throw new Error(`Invalid Sanity projectId: ${projectId}`);
-}
+import {visionTool} from '@sanity/vision'
+import {defineConfig} from 'sanity'
+import {structureTool} from 'sanity/structure'
+
+// Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
+import {apiVersion, dataset, projectId} from './src/sanity/env'
+import {schema} from './src/sanity/schemaTypes'
+import {structure} from './src/sanity/structure'
 
 export default defineConfig({
   basePath: '/studio',
-  name: 'default',
-  title: 'Your Studio Name',
   projectId,
   dataset,
+  // Add and edit the content schema in the './sanity/schemaTypes' folder
   schema,
   plugins: [
-    structureTool(),
-    visionTool({ defaultApiVersion: apiVersion }),
+    structureTool({structure}),
+    // Vision is for querying with GROQ from inside the Studio
+    // https://www.sanity.io/docs/the-vision-plugin
+    visionTool({defaultApiVersion: apiVersion}),
   ],
-});
+})

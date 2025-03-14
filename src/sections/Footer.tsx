@@ -35,19 +35,20 @@ const Footer: FC = () => {
       label: "Home",
     },
     {
-      href: "#",
+      href: "#about",
+      label: "About",
+    },
+    {
+      href: "#projects",
       label: "Projects",
     },
     {
-      href: "#",
+      href: "#Testimonials",
       label: "Testimonials",
     },
+  
     {
-      href: "#",
-      label: "Faqs",
-    },
-    {
-      href: "#",
+      href: "#contact",
       label: "Contact",
     },
   ];

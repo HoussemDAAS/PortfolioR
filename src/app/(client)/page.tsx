@@ -30,9 +30,7 @@ export default function Home() {
         {/* Parallax section needs to be client component */}
         <ProductParallaxServerComponent />
   
-  <AnimatedSection>
-  <Contact />
-        </AnimatedSection>
+ 
         <AnimatedSection>
           <TapeServerComponent />
         </AnimatedSection>
@@ -44,7 +42,11 @@ export default function Home() {
         <AnimatedSection>
           <Testimonials />
         </AnimatedSection>
+        <AnimatedSection>
+  <Contact />
+      </AnimatedSection>
       </div>
+
 
       <Footer />
       {/* <div className="flex flex-col gap-16 md:gap-24 overflow-hidden" /> */}

@@ -60,7 +60,24 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
   return (
     <div id="projects" className="w-full relative bg-black-100 min-h-screen" onClick={handleFirstInteraction}>
       {/* Keep header section unchanged */}
-
+      <section className="relative pt-20 pb-8 px-4 md:pb-12 md:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-3xl md:text-5xl font-bold text-orange-500 mb-4"
+          >
+            Aerial Visual Stories
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto"
+          >
+            Cinematic moments captured from above
+          </motion.p>
+        </div>
+      </section>
       <div className="relative pb-24">
         {/* Mobile Scroll */}
         <div className="md:hidden overflow-x-hidden">

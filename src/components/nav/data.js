@@ -41,14 +41,6 @@ export const footerLinks = [
   
         href: "https://www.instagram.com/rayenelmaamoun/"
   
-    },
-  
-    {
-  
-        title: "Twitter",
-  
-        href: "/"
-  
     }
   
   ]

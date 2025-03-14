@@ -8,7 +8,7 @@ interface IntroData {
 
 const Intro: FC<{ introData: IntroData }> = ({ introData }) => {
   return (
-    <section className="max-h-[400px] mt-40 md:mt-20 mb-10">
+    <section className="max-h-[400px] my-10" id="about">
       <Word value={introData.text} />
     </section>
   );

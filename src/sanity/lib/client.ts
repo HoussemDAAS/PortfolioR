@@ -1,9 +1,10 @@
-// src/sanity/client.ts
-import { createClient } from 'next-sanity';
+import { createClient } from 'next-sanity'
+
+import { apiVersion, dataset, projectId } from '../env'
 
 export const client = createClient({
-  projectId: '1qcydod7' as any, // Force override type checking
-  dataset: 'production',
-  apiVersion: '2025-01-18',
-  useCdn: false,
-});
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
+})

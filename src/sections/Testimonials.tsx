@@ -47,7 +47,7 @@ const testimonials = [
 
 const Testimonials: FC = () => {
   return (
-    <div className="py-16 lg:py-24">
+    <div className="py-16 lg:py-24" id="testimonials">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
