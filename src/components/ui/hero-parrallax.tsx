@@ -1,10 +1,10 @@
 // components/ui/hero-parrallax.tsx
+
 "use client";
 import React, { useRef, useEffect, useCallback, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import Link from "next/link";
-import { FaPlay, FaPause, FaArrowRight } from "react-icons/fa";
-import { FiClock, FiSettings } from "react-icons/fi";
+import { FaPause, FaPlay } from "react-icons/fa";
 
 interface Product {
   title: string;
@@ -30,6 +30,7 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const controls = useAnimation();
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   const handleFirstInteraction = useCallback(() => {
@@ -152,7 +153,6 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
     const [playbackRate, setPlaybackRate] = useState(1);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [isSeeking, setIsSeeking] = useState(false);
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const hasImage = !!product.imageThumbnail?.asset?.url;
 
@@ -161,9 +161,7 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
       if (!video) return;
 
       const updateState = () => setIsPlaying(!video.paused);
-      const handleTimeUpdate = () => {
-        if (!isSeeking) setCurrentTime(video.currentTime);
-      };
+      const handleTimeUpdate = () => setCurrentTime(video.currentTime);
       const handleLoadedData = () => setDuration(video.duration);
 
       video.addEventListener('play', updateState);
@@ -177,7 +175,7 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
         video.removeEventListener('timeupdate', handleTimeUpdate);
         video.removeEventListener('loadeddata', handleLoadedData);
       };
-    }, [isSeeking]);
+    }, []);
 
     const handleVideoClick = () => {
       const video = localVideoRef.current;
@@ -193,7 +191,7 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
     };
 
     const handleSpeedChange = () => {
-      const newSpeed = playbackRate === 2 ? 0.5 : playbackRate + 0.5;
+      const newSpeed = playbackRate === 2 ? 1 : playbackRate + 0.5;
       if (localVideoRef.current) {
         localVideoRef.current.playbackRate = newSpeed;
         setPlaybackRate(newSpeed);
@@ -206,18 +204,6 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
       const time = Number(e.target.value);
       video.currentTime = time;
       setCurrentTime(time);
-    };
-
-    const handleSeekStart = () => {
-      setIsSeeking(true);
-      const video = localVideoRef.current;
-      if (video && !video.paused) video.pause();
-    };
-
-    const handleSeekEnd = () => {
-      setIsSeeking(false);
-      const video = localVideoRef.current;
-      if (video && isPlaying) video.play();
     };
 
     const formatTime = (seconds: number) => {
@@ -234,6 +220,7 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
         className="relative group overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl bg-black"
       >
         <div className="relative w-full aspect-[9/16]">
+          {/* Image Thumbnail */}
           {hasImage && !showVideo && (
             <img
               src={product.imageThumbnail?.asset.url}
@@ -242,6 +229,7 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
             />
           )}
 
+          {/* Video Element */}
           <video
             ref={(node) => {
               localVideoRef.current = node;
@@ -258,58 +246,50 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
             onClick={isMobile ? handleVideoClick : undefined}
           />
 
+          {/* Video Controls Container */}
           <div className="absolute bottom-0 left-0 right-0 p-2 space-y-2 bg-gradient-to-t from-black/90 to-transparent">
-            <div className="relative w-full">
-              <input
-                type="range"
-                min="0"
-                max={duration || 0}
-                value={currentTime}
-                onChange={handleSeek}
-                onMouseDown={handleSeekStart}
-                onMouseUp={handleSeekEnd}
-                onTouchStart={handleSeekStart}
-                onTouchEnd={handleSeekEnd}
-                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer absolute top-0"
-                style={{
-                  background: `linear-gradient(to right, #f97316 ${(currentTime / (duration || 1)) * 100}%, #374151 ${(currentTime / (duration || 1)) * 100}%)`
-                }}
-              />
-            </div>
+            {/* Progress Bar */}
+            <input
+              type="range"
+              min="0"
+              max={duration || 0}
+              value={currentTime}
+              onChange={handleSeek}
+              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            />
 
+            {/* Controls Row */}
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center space-x-4">
+                {/* Play/Pause Button */}
                 <button
                   onClick={handleVideoClick}
-                  className="text-white hover:text-orange-500 transition-colors p-2"
-                  aria-label={isPlaying ? "Pause" : "Play"}
+                  className="text-white hover:text-orange-500 transition-colors"
                 >
                   {isPlaying ? (
-                    <FaPause className="w-5 h-5" />
+                   <FaPause className="w-5 h-5" />
                   ) : (
                     <FaPlay className="w-5 h-5" />
                   )}
                 </button>
 
-                <div className="flex items-center space-x-2 text-white text-sm font-mono">
-                  <FiClock className="w-4 h-4" />
-                  <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+                {/* Time Display */}
+                <div className="text-white text-sm font-mono">
+                  {formatTime(currentTime)} / {formatTime(duration)}
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={handleSpeedChange}
-                  className="flex items-center space-x-2 px-3 py-1 text-sm text-white bg-black/50 rounded hover:bg-black/70 transition-colors"
-                  aria-label="Playback speed"
-                >
-                  <FiSettings className="w-4 h-4" />
-                  <span>{playbackRate}x</span>
-                </button>
-              </div>
+              {/* Speed Control */}
+              <button
+                onClick={handleSpeedChange}
+                className="px-2 py-1 text-sm text-white bg-black/50 rounded hover:bg-black/70 transition-colors"
+              >
+                {playbackRate}x
+              </button>
             </div>
           </div>
 
+          {/* Title Overlay */}
           <div className="absolute bottom-20 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
             <motion.h3
               initial={{ opacity: 0, y: 10 }}
@@ -333,7 +313,7 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
             className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
           >
             <span>View Full Project</span>
-            <FaArrowRight className="w-4 h-4" />
+            <span className="text-xl">→</span>
           </motion.button>
         </Link>
       </motion.div>

@@ -56,7 +56,8 @@ const menu = {
               >
                 <AnimatePresence>
 
-                {isActive && <Nav/>}
+  
+                {isActive && <Nav setIsActive={setIsActive} />}
                 </AnimatePresence>
               </motion.div>
               <NavButton isActive={isActive} setIsActive={setIsActive} />

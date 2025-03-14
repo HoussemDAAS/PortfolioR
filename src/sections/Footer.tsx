@@ -73,10 +73,11 @@ const Footer: FC = () => {
               >
                 Enough talk. Let&apos;s make something great together.
               </motion.h2>
-              <Button
-                variant="secondary"
-                className="mt-8 text-white"
-                iconAfter={
+              <a href="mailto:rayen.maamoun@gmail.com">
+                <Button
+                  variant="secondary"
+                  className="mt-8 text-white"
+                  iconAfter={
                   <div className="size-6 overflow-hidden">
                     <div className="w-12 h-6 flex group-hover/button:-translate-x-1/2 transition-transform duration-300">
                       <svg
@@ -111,8 +112,9 @@ const Footer: FC = () => {
                   </div>
                 }
               >
-                rayenelmaamoun@gmail.com
-              </Button>
+                Rayen.maamoun@gmail.com
+                </Button>
+              </a>
             </div>
             <div className="md:col-span-1">
               <nav className="flex flex-col gap-8 mt-16 md:items-end md:mt-0">

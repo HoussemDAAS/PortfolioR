@@ -87,7 +87,7 @@ export const slideIn = {
   }
 
 }
- const Nav = () => {
+ const Nav = ({ setIsActive }: { setIsActive: (value: boolean) => void })  => {
   return (
     <div className={styles.nav}>
       <div className={styles.body}>
@@ -102,7 +102,11 @@ export const slideIn = {
       animate="enter"
       exit="exit"
      >
-      <Link href={link.href}>{link.title}</Link>
+         <Link 
+                href={link.href} 
+                onClick={() => setIsActive(false)} // Add onClick handler
+ 
+              >{link.title}</Link>
     </motion.div>
 
     </div> 
@@ -132,7 +136,7 @@ export const slideIn = {
                             exit="exit"
 
                             key={`f_${i}`}
-
+ onClick={() => setIsActive(false)}
                         >
 
                             {title}

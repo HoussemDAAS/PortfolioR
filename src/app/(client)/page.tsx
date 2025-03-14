@@ -26,11 +26,6 @@ export default function Home() {
         <AnimatedSection>
           <IntroServerComponent />
         </AnimatedSection>
-
-        {/* Parallax section needs to be client component */}
-        <ProductParallaxServerComponent />
-  
- 
         <AnimatedSection>
           <TapeServerComponent />
         </AnimatedSection>
@@ -38,7 +33,8 @@ export default function Home() {
         <AnimatedSection>
           <FeatureServerComponent />
         </AnimatedSection>
-
+        {/* Parallax section needs to be client component */}
+        <ProductParallaxServerComponent />
         <AnimatedSection>
           <Testimonials />
         </AnimatedSection>
