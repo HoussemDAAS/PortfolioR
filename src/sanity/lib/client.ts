@@ -5,7 +5,7 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: process.env.NODE_ENV === 'production',
+  useCdn: false,
   token: process.env.NEXT_PUBLIC_SANITY_API_TOKEN, 
   ignoreBrowserTokenWarning: true
 })

@@ -32,7 +32,7 @@ const LogoTicker: React.FC<LogoTickerProps> = ({ logos }) => {
               duration: 30,
               ease: "linear",
             }}
-            className="flex flex-none gap-24 pr-24 bg-black-600 py-4"
+            className="flex flex-none gap-24 pr-24 bg-black-600 py-4 items-center justify-center"
           >
             {Array.from({ length: 2 }).map((_, i) => (
               <Fragment key={i}>

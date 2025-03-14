@@ -35,75 +35,74 @@ const Preloader = () => {
         ease: "power2.inOut",
       });
     }
-      // Halved all durations and delays
-      animate(counter3, 2.5); // Changed from 5 to 2.5
-      animate(document.querySelector(".counter-2"), 3); // Changed from 6 to 3
-      animate(document.querySelector(".counter-1"), 1, 2); // Changed from 2,4 to 1,2
-  
-      gsap.to(".digit", {
-        top: "-150px",
-        stagger: { amount: 0.25 },
-        delay: 3, // Changed from 6 to 3
-        duration: 0.5, // Changed from 1 to 0.5
-        ease: "power4.inOut",
-      });
-      
-      gsap.from(".loader-1", {
-        width: 0,
-        duration: 3, // Changed from 6 to 3
-        ease: "power2.inOut",
-      });
-      
-      gsap.from(".loader-2", {
-        width: 0,
-        delay: 0.95, // Changed from 1.9 to 0.95
-        duration: 1, // Changed from 2 to 1
-        ease: "power2.inOut",
-      });
-  
-      gsap.to(".loader", {
-        background: "none",
-        delay: 3, // Changed from 6 to 3
-        duration: 0.05, // Changed from 0.1 to 0.05
-      });
-  
-      gsap.to(".loader-1", {
-        rotate: 90,
-        y: -50,
-        duration: 0.25, // Changed from 0.5 to 0.25
-        delay: 3, // Changed from 6 to 3
-      });
-  
-      // @ts-ignore
-      gsap.to(".loader-2", {
-        x: -75,
-        y: 75,
-        duration: 0.25 // Changed from 0.5 to 0.25
-      },"<");
-  
-      gsap.to(".loader", {
-        scale: 40,
-        duration: 0.5, // Changed from 1 to 0.5
-        delay: 3.5, // Changed from 7 to 3.5
-        ease: "power2.inOut",
-      });
-      
-      gsap.to(".loader", {
-        rotate: 45,
-        y: 500,
-        x: 2000,
-        duration: 0.5, // Changed from 1 to 0.5
-        delay: 3.5, // Changed from 7 to 3.5
-        ease: "power2.inOut",
-      });
-  
-      gsap.to(".loading-screen", {
-        opacity: 0,
-        duration: 0.25, // Changed from 0.5 to 0.25
-        delay: 3.75, // Changed from 7.5 to 3.75
-        ease: "power1.inOut",
-      });
-    }, []);
+    animate(counter3, 2);
+    animate(document.querySelector(".counter-2"), 2.5);
+    animate(document.querySelector(".counter-1"), 0.75, 1.5);
+
+    gsap.to(".digit", {
+      top: "-150px",
+      stagger: { amount: 0.25 },
+      delay: 3,
+      duration: 0.5,
+      ease: "power4.inOut",
+    });
+    
+    gsap.from(".loader-1", {
+      width: 0,
+      duration: 2.5,
+      ease: "power2.inOut",
+    });
+    
+    gsap.from(".loader-2", {
+      width: 0,
+      delay: 0.75,
+      duration: 0.75,
+      ease: "power2.inOut",
+    });
+
+    gsap.to(".loader", {
+      background: "none",
+      delay: 3.5,
+      duration: 0.1,
+    });
+
+    gsap.to(".loader-1", {
+      rotate: 90,
+      y: -50,
+      duration: 0.3,
+      delay: 3.5,
+    });
+
+    // @ts-ignore
+    gsap.to(".loader-2", {
+      x: -75,
+      y: 75,
+      duration: 0.3
+    },"<");
+
+    gsap.to(".loader", {
+      scale: 40,
+      duration: 0.6,
+      delay: 4,
+      ease: "power2.inOut",
+    });
+    
+    gsap.to(".loader", {
+      rotate: 45,
+      y: 500,
+      x: 2000,
+      duration: 0.6,
+      delay: 4,
+      ease: "power2.inOut",
+    });
+
+    gsap.to(".loading-screen", {
+      opacity: 0,
+      duration: 0.3,
+      delay: 4.5,
+      ease: "power1.inOut",
+    });
+  }, []);
   return (
     <div>
       <div className="loading-screen">
