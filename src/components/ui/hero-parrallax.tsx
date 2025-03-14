@@ -13,6 +13,11 @@ interface Product {
       url: string;
     };
   };
+  imageThumbnail?: {
+    asset: {
+      url: string;
+    };
+  };
 }
 
 interface HeroParallaxProps {
@@ -27,14 +32,10 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
   const controls = useAnimation();
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-  // Handle first user interaction
   const handleFirstInteraction = useCallback(() => {
-    if (!hasInteracted) {
-      setHasInteracted(true);
-    }
+    if (!hasInteracted) setHasInteracted(true);
   }, [hasInteracted]);
 
-  // Video control management
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
       if (!video) return;
@@ -46,20 +47,26 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
     });
   }, [activeIndex, hasInteracted]);
 
-  // Desktop hover animations
   const handleHoverStart = useCallback((index: number) => {
     if (isMobile || !hasInteracted) return;
-    videoRefs.current[index]?.play().catch(() => {});
+    const video = videoRefs.current[index];
+    if (video) {
+      video.style.opacity = '1';
+      video.play().catch(() => {});
+    }
   }, [isMobile, hasInteracted]);
 
   const handleHoverEnd = useCallback((index: number) => {
     if (isMobile || !hasInteracted) return;
-    videoRefs.current[index]?.pause();
+    const video = videoRefs.current[index];
+    if (video) {
+      video.pause();
+      video.style.opacity = video.parentElement?.querySelector('img') ? '0' : '1';
+    }
   }, [isMobile, hasInteracted]);
 
   return (
     <div id="projects" className="w-full relative bg-black-100 min-h-screen" onClick={handleFirstInteraction}>
-      {/* Keep header section unchanged */}
       <section className="relative pt-20 pb-8 px-4 md:pb-12 md:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <motion.h1 
@@ -79,7 +86,6 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
         </div>
       </section>
       <div className="relative pb-24">
-        {/* Mobile Scroll */}
         <div className="md:hidden overflow-x-hidden">
           <div
             ref={scrollContainerRef}
@@ -87,10 +93,7 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
             style={{ scrollSnapType: 'x mandatory' }}
           >
             {products.map((product, index) => (
-              <div 
-                key={`mobile-${index}`}
-                className="flex-shrink-0 w-[85vw] mx-4 snap-center"
-              >
+              <div key={`mobile-${index}`} className="flex-shrink-0 w-[85vw] mx-4 snap-center">
                 <VideoCard
                   product={product}
                   index={index}
@@ -104,7 +107,6 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
           </div>
         </div>
 
-        {/* Desktop Grid */}
         <div className="hidden md:block">
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 max-w-7xl mx-auto">
             {products.map((product, index) => (
@@ -146,20 +148,31 @@ interface VideoCardProps {
 const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
   ({ product, index, isActive, isMobile, hasInteracted }, ref) => {
     const [isPlaying, setIsPlaying] = useState(false);
+    const [showVideo, setShowVideo] = useState(false);
+    const [playbackRate, setPlaybackRate] = useState(1);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
     const localVideoRef = useRef<HTMLVideoElement>(null);
+    const hasImage = !!product.imageThumbnail?.asset?.url;
 
-    // Sync play state with video element
     useEffect(() => {
       const video = localVideoRef.current;
       if (!video) return;
 
       const updateState = () => setIsPlaying(!video.paused);
+      const handleTimeUpdate = () => setCurrentTime(video.currentTime);
+      const handleLoadedData = () => setDuration(video.duration);
+
       video.addEventListener('play', updateState);
       video.addEventListener('pause', updateState);
+      video.addEventListener('timeupdate', handleTimeUpdate);
+      video.addEventListener('loadeddata', handleLoadedData);
       
       return () => {
         video.removeEventListener('play', updateState);
         video.removeEventListener('pause', updateState);
+        video.removeEventListener('timeupdate', handleTimeUpdate);
+        video.removeEventListener('loadeddata', handleLoadedData);
       };
     }, []);
 
@@ -168,10 +181,34 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
       if (!video) return;
       
       if (video.paused) {
+        setShowVideo(true);
         video.play().catch(() => {});
       } else {
         video.pause();
+        if (hasImage) setShowVideo(false);
       }
+    };
+
+    const handleSpeedChange = () => {
+      const newSpeed = playbackRate === 2 ? 1 : playbackRate + 0.5;
+      if (localVideoRef.current) {
+        localVideoRef.current.playbackRate = newSpeed;
+        setPlaybackRate(newSpeed);
+      }
+    };
+
+    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const video = localVideoRef.current;
+      if (!video) return;
+      const time = Number(e.target.value);
+      video.currentTime = time;
+      setCurrentTime(time);
+    };
+
+    const formatTime = (seconds: number) => {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = Math.floor(seconds % 60);
+      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     };
 
     return (
@@ -182,6 +219,16 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
         className="relative group overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl bg-black"
       >
         <div className="relative w-full aspect-[9/16]">
+          {/* Image Thumbnail */}
+          {hasImage && !showVideo && (
+            <img
+              src={product.imageThumbnail?.asset.url}
+              alt={product.title}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
+
+          {/* Video Element */}
           <video
             ref={(node) => {
               localVideoRef.current = node;
@@ -189,30 +236,60 @@ const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
               else if (ref) ref.current = node;
             }}
             src={product.thumbnail.asset.url}
-            muted={!hasInteracted} // Mute until user interaction
+            muted={!hasInteracted}
             loop
             playsInline
-            className="absolute inset-0 w-full h-full object-cover"
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+              hasImage ? (showVideo ? 'opacity-100' : 'opacity-0') : 'opacity-100'
+            }`}
             onClick={isMobile ? handleVideoClick : undefined}
           />
-          
-          {/* Play/Pause Overlay */}
-          {(isMobile || !isPlaying) && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30 transition-opacity duration-300">
+
+          {/* Video Controls Container */}
+          <div className="absolute bottom-0 left-0 right-0 p-2 space-y-2 bg-gradient-to-t from-black/90 to-transparent">
+            {/* Progress Bar */}
+            <input
+              type="range"
+              min="0"
+              max={duration || 0}
+              value={currentTime}
+              onChange={handleSeek}
+              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            />
+
+            {/* Controls Row */}
+            <div className="flex items-center justify-between px-2">
+              <div className="flex items-center space-x-4">
+                {/* Play/Pause Button */}
+                <button
+                  onClick={handleVideoClick}
+                  className="text-white hover:text-orange-500 transition-colors"
+                >
+                  {isPlaying ? (
+                    <span className="text-xl">⏸</span>
+                  ) : (
+                    <span className="text-xl">▶</span>
+                  )}
+                </button>
+
+                {/* Time Display */}
+                <div className="text-white text-sm font-mono">
+                  {formatTime(currentTime)} / {formatTime(duration)}
+                </div>
+              </div>
+
+              {/* Speed Control */}
               <button
-                onClick={handleVideoClick}
-                className="p-4 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-all"
+                onClick={handleSpeedChange}
+                className="px-2 py-1 text-sm text-white bg-black/50 rounded hover:bg-black/70 transition-colors"
               >
-                {isPlaying ? (
-                  <span className="text-white text-2xl">⏸</span>
-                ) : (
-                  <span className="text-white text-2xl">▶</span>
-                )}
+                {playbackRate}x
               </button>
             </div>
-          )}
+          </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+          {/* Title Overlay */}
+          <div className="absolute bottom-20 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
             <motion.h3
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

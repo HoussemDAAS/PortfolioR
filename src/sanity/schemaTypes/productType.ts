@@ -17,11 +17,26 @@ export const productType = defineType({
     }),
     defineField({
       name: 'thumbnail',
-      title: 'Thumbnail',
+      title: 'Video Thumbnail',
       type: 'file',
       options: {
         accept: 'video/*',
       },
+    }),
+    defineField({
+      name: 'imageThumbnail',
+      title: 'Cover Image',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alternative Text',
+        }
+      ]
     }),
   ],
 });
