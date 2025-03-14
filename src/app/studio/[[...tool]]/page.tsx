@@ -17,7 +17,7 @@
 // export default function StudioPage() {
 //   return <NextStudio config={config} />
 // }
-'use client'
+// 'use client'
 
 export default function StudioPage() {
   return (

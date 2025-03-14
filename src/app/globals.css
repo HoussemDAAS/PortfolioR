@@ -76,11 +76,25 @@ body.loading {
     background: transparent;
   }
 }
-@keyframes glitch {
-  0% { transform: translate(0) }
-  20% { transform: translate(-2px, 1px) }
-  40% { transform: translate(1px, -1px) }
-  60% { transform: translate(-1px, 2px) }
-  80% { transform: translate(1px, -2px) }
-  100% { transform: translate(0) }
+
+.snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.snap-center {
+  scroll-snap-align: center;
+}
+/* globals.css */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.video-card {
+  scroll-snap-align: center;
 }

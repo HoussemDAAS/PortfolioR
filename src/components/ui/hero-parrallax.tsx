@@ -1,6 +1,8 @@
+// components/ui/hero-parrallax.tsx
+
 "use client";
-import React, { useRef, useState, useCallback } from "react";
-import { motion } from "framer-motion";
+import React, { useRef, useEffect, useCallback, useState } from "react";
+import { motion, useAnimation } from "framer-motion";
 import Link from "next/link";
 
 interface Product {
@@ -19,21 +21,77 @@ interface HeroParallaxProps {
 
 export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const controls = useAnimation();
 
-  const handleScroll = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const scrollWidth = container.scrollWidth - container.clientWidth;
-    const newProgress = scrollWidth > 0 
-      ? Math.min((container.scrollLeft / scrollWidth) * 100, 100)
-      : 0;
-    setScrollProgress(newProgress);
+  // Hydration-safe mobile detection
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    setHasInteracted(false);
   }, []);
 
+  // Handle first user interaction
+  const handleGlobalInteraction = useCallback(() => {
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      videoRefs.current.forEach(video => {
+        if (video) video.muted = false;
+      });
+    }
+  }, [hasInteracted]);
+
+  // Mobile scroll handler
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current || !isMobile) return;
+
+    const container = scrollContainerRef.current;
+    const scrollLeft = container.scrollLeft;
+    const containerWidth = container.offsetWidth;
+    
+    products.forEach((_, index) => {
+      const child = container.children[index] as HTMLElement;
+      if (!child) return;
+      
+      const childLeft = child.offsetLeft - scrollLeft;
+      const childWidth = child.offsetWidth;
+      const visibility = Math.max(0, Math.min(1, 
+        (containerWidth - Math.abs(childLeft + childWidth / 2 - containerWidth / 2)) / childWidth
+      ));
+      
+      if (visibility > 0.8 && activeIndex !== index) {
+        setActiveIndex(index);
+      }
+    });
+  }, [isMobile, products.length, activeIndex]);
+
+  // Video control management
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (!video) return;
+      if (index === activeIndex && hasInteracted) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }, [activeIndex, hasInteracted]);
+
+  // Desktop hover handlers
+  const handleHoverStart = useCallback((index: number) => {
+    if (isMobile || !hasInteracted) return;
+    videoRefs.current[index]?.play().catch(() => {});
+  }, [isMobile, hasInteracted]);
+
+  const handleHoverEnd = useCallback((index: number) => {
+    if (isMobile || !hasInteracted) return;
+    videoRefs.current[index]?.pause();
+  }, [isMobile, hasInteracted]);
+
   return (
-    <div id="projects" className="w-full relative bg-black-100">
+    <div id="projects" className="w-full relative bg-black-100 min-h-screen" onClick={handleGlobalInteraction}>
       <section className="relative pt-20 pb-8 px-4 md:pb-12 md:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <motion.h1 
@@ -46,120 +104,217 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-base md:text-lg text-black-900 max-w-3xl mx-auto"
+            className="text-base md:text-lg text-gray-300 max-w-3xl mx-auto"
           >
             Cinematic moments captured from above
           </motion.p>
         </div>
       </section>
 
-      <div className="relative pb-12">
-        {/* Mobile: Horizontal scroll with hidden scrollbar */}
-        <div className="md:hidden">
-          <div 
+      {/* Sound Permission Banner */}
+      {!hasInteracted && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-black/80 text-white px-6 py-3 rounded-full backdrop-blur-sm z-50">
+          🔈 Click anywhere to enable sound
+        </div>
+      )}
+
+      <div className="relative pb-24">
+        {/* Mobile Scroll */}
+        <div className="md:hidden overflow-x-hidden">
+          <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex overflow-x-auto pb-4 px-4 snap-x scrollbar-hide"
-            style={{ 
-              WebkitOverflowScrolling: 'touch',
-              scrollBehavior: 'smooth',
-              paddingBottom: '2px'
-            }}
+            className="flex overflow-x-auto snap-x scrollbar-hide pb-8"
+            style={{ scrollSnapType: 'x mandatory' }}
           >
             {products.map((product, index) => (
               <div 
                 key={`mobile-${index}`}
-                className="flex-shrink-0 w-[80vw] mr-4 snap-center"
+                className="flex-shrink-0 w-[85vw] mx-4 snap-center"
               >
-                <ReelCard product={product} index={index} />
+                <VideoCard
+                  product={product}
+                  index={index}
+                  isActive={index === activeIndex}
+                  isMobile={true}
+                  hasInteracted={hasInteracted}
+                  ref={(el) => (videoRefs.current[index] = el)}
+                />
               </div>
             ))}
           </div>
-
-          {/* Custom Scroll Progress Indicator */}
-          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black-200/20">
-            <motion.div 
-              className="h-full bg-orange-500 origin-left rounded-full" 
-              style={{ scaleX: scrollProgress / 100 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            />
-          </div>
         </div>
 
-        {/* Desktop: Staggered Grid */}
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 max-w-7xl mx-auto">
-          {products.map((product, index) => (
-            <motion.div
-              key={`desktop-${index}`}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="col-span-1"
-            >
-              <ReelCard product={product} index={index} />
-            </motion.div>
-          ))}
+        {/* Desktop Grid */}
+        <div className="hidden md:block">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 max-w-7xl mx-auto">
+            {products.map((product, index) => (
+              <motion.div
+                key={`desktop-${index}`}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                onHoverStart={() => handleHoverStart(index)}
+                onHoverEnd={() => handleHoverEnd(index)}
+                className="col-span-1"
+              >
+                <VideoCard
+                  product={product}
+                  index={index}
+                  isActive={index === activeIndex}
+                  isMobile={false}
+                  hasInteracted={hasInteracted}
+                  ref={(el) => (videoRefs.current[index] = el)}
+                />
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-interface ReelCardProps {
+interface VideoCardProps {
   product: Product;
   index: number;
+  isActive: boolean;
+  isMobile: boolean;
+  hasInteracted: boolean;
 }
 
-const ReelCard: React.FC<ReelCardProps> = ({ product, index }) => {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.03 }}
-      transition={{ type: "spring", stiffness: 400 }}
-      className="relative w-full overflow-hidden rounded-xl cursor-pointer shadow-xl hover:shadow-2xl hover:shadow-orange-500/20"
-    >
-      <Link href={product.link} target="_blank" rel="noopener noreferrer">
+const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
+  ({ product, index, isActive, isMobile, hasInteracted }, ref) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isMuted, setIsMuted] = useState(true);
+    const localVideoRef = useRef<HTMLVideoElement>(null);
+    const [mounted, setMounted] = useState(false);
+
+    // Sync state with video element
+    useEffect(() => {
+      setMounted(true);
+      const video = localVideoRef.current;
+      if (!video) return;
+
+      const updateState = () => {
+        setIsPlaying(!video.paused);
+        setIsMuted(video.muted);
+      };
+
+      video.addEventListener('play', updateState);
+      video.addEventListener('pause', updateState);
+      video.addEventListener('volumechange', updateState);
+
+      return () => {
+        video.removeEventListener('play', updateState);
+        video.removeEventListener('pause', updateState);
+        video.removeEventListener('volumechange', updateState);
+      };
+    }, []);
+
+    // Handle video interactions
+    const handleVideoClick = useCallback(() => {
+      const video = localVideoRef.current;
+      if (!video) return;
+
+      if (video.paused) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    }, []);
+
+    // Update mute state when global interaction happens
+    useEffect(() => {
+      if (localVideoRef.current && hasInteracted) {
+        localVideoRef.current.muted = false;
+        setIsMuted(false);
+      }
+    }, [hasInteracted]);
+
+    if (!mounted) return null;
+
+    return (
+      <motion.div
+        initial={{ scale: 1 }}
+        animate={{ scale: isActive ? 1.03 : 1 }}
+        transition={{ type: "spring", stiffness: 300 }}
+        className="relative group overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl bg-black"
+      >
         <div className="relative w-full aspect-[9/16]">
           <video
+            ref={(node) => {
+              localVideoRef.current = node;
+              if (typeof ref === "function") ref(node);
+              else if (ref) ref.current = node;
+            }}
             src={product.thumbnail.asset.url}
-            muted
-            autoPlay
+            muted={!hasInteracted}
             loop
             playsInline
-            className="absolute top-0 left-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
+            onClick={isMobile ? handleVideoClick : undefined}
           />
           
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-          
-          <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute bottom-0 left-0 right-0 p-4 text-white text-lg font-medium"
-          >
-            {product.title}
-          </motion.h2>
+          {/* Play/Pause Controls */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <button
+              onClick={handleVideoClick}
+              className={`p-4 rounded-full backdrop-blur-sm transition-all ${
+                isPlaying ? 'bg-red-500/80 hover:bg-red-600/80' : 'bg-green-500/80 hover:bg-green-600/80'
+              }`}
+            >
+              {isPlaying ? (
+                <span className="text-white text-2xl">⏸</span>
+              ) : (
+                <span className="text-white text-2xl">▶</span>
+              )}
+            </button>
+          </div>
 
-          <motion.div
-            className="absolute top-4 right-4 bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <span className="text-xs text-orange-400 font-medium">VIEW →</span>
-          </motion.div>
-
-          <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="w-12 h-12 bg-orange-500/90 rounded-full flex items-center justify-center shadow-lg">
-              <div className="w-0 h-0 border-t-6 border-b-6 border-l-8 border-transparent border-l-white" />
-            </div>
-          </motion.div>
+          {/* Bottom Info Bar */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+            <motion.h3
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-white text-lg font-semibold"
+            >
+              {product.title}
+            </motion.h3>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (localVideoRef.current) {
+                  localVideoRef.current.muted = !localVideoRef.current.muted;
+                  setIsMuted(localVideoRef.current.muted);
+                }
+              }}
+              className="absolute right-4 bottom-4 p-2 bg-black/50 rounded-full backdrop-blur-sm hover:bg-black/70"
+            >
+              {isMuted ? '🔇' : '🔊'}
+            </button>
+          </div>
         </div>
-      </Link>
-    </motion.div>
-  );
-};
+
+        <Link
+          href={product.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full mt-4"
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+          >
+            <span>View Full Project</span>
+            <span className="text-xl">→</span>
+          </motion.button>
+        </Link>
+      </motion.div>
+    );
+  }
+);
+
+VideoCard.displayName = "VideoCard";
