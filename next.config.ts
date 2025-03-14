@@ -1,47 +1,19 @@
-// /** @type {import('next').NextConfig} */
-// const nextConfig = {
-//   images: {
-//     domains: ['cdn.sanity.io'],
-//   },
-//   eslint: {
-//     ignoreDuringBuilds: true,
-//   },
-//   typescript: {
-//     ignoreBuildErrors: true,
-//   },
-//   experimental: {
-//     webpackBuildWorker: true,
-//     serverComponentsExternalPackages: ['@sanity/*'],
-//   },
-//   webpack: (config, { isServer }) => {
-//     // Add null-loader for Sanity Studio files
-//     config.module.rules.push({
-//       test: /sanity\.(ts|js)/,
-//       use: 'null-loader'
-//     });
-
-//     // Add custom loader configuration
-//     config.module.rules.push({
-//       test: /\.svg$/,
-//       use: ['@svgr/webpack'],
-//     });
-
-//     // Important: Return the modified config
-//     return config;
-//   }
-// }
-
-
-
-// module.exports = nextConfig
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ['sharp', '@sanity/client'],
+    outputFileTracingIncludes: {
+      '**/*': ['node_modules/sharp/**/*'],
+    },
+  },
+  output: 'standalone',
   env: {
     NEXT_PUBLIC_SANITY_PROJECT_ID: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
     NEXT_PUBLIC_SANITY_DATASET: process.env.NEXT_PUBLIC_SANITY_DATASET,
-    NEXT_PUBLIC_SANITY_API_VERSION: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
+    NEXT_PUBLIC_SANITY_API_VERSION: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2023-05-03',
   },
   typescript: {
-    ignoreBuildErrors: true, // Temporary during fixes
+    ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -52,8 +24,18 @@ module.exports = {
       {
         protocol: 'https',
         hostname: 'cdn.sanity.io',
+        port: '',
+        pathname: '/images/**',
       },
     ],
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+
+    return config;
   },
   async headers() {
     return [
@@ -62,10 +44,12 @@ module.exports = {
         headers: [
           {
             key: 'Cache-Control',
-            value: "public, max-age=60, stale-while-revalidate=300",
+            value: 'public, max-age=60, stale-while-revalidate=300',
           },
         ],
       },
     ];
   },
 };
+
+module.exports = nextConfig;
