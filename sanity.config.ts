@@ -18,6 +18,8 @@ export default defineConfig({
   projectId,
   dataset,
   schema,
+  useCdn: false,
+  token: process.env.SANITY_API_TOKEN,
   plugins: [
     structureTool({structure}),
     // Vision is for querying with GROQ from inside the Studio

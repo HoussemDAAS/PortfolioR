@@ -1,18 +1,19 @@
+// structure.ts
 import type {StructureResolver} from 'sanity/structure'
 
-// https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure: StructureResolver = (S) =>
   S.list()
-    .title('Costumize your content')
+    .title('Customize your content')
     .items([
       S.documentTypeListItem('hero').title('Hero').icon(() => '🦸‍♂️'),
-      S.documentTypeListItem('logo').title('Componey they have trust in you ').icon(() => '🖼️'),
+      S.documentTypeListItem('logo').title('Companies that trust you').icon(() => '🖼️'),
       S.documentTypeListItem('intro').title('Intro').icon(() => '📝'),
       S.documentTypeListItem('product').title('Projects').icon(() => '📦'),
       S.documentTypeListItem('tape').title('Tape').icon(() => '📼'),
       S.documentTypeListItem('feature').title('Feature').icon(() => '🔥'),
+      S.documentTypeListItem('testimonial').title('Testimonials').icon(() => '💬'), // New entry
       S.divider(),
       ...S.documentTypeListItems().filter(
-        (item) => item.getId() && !['hero', 'logo', 'intro', 'product', 'tape', 'feature'].includes(item.getId()!),
+        (item) => item.getId() && !['hero', 'logo', 'intro', 'product', 'tape', 'feature', 'testimonial'].includes(item.getId()!),
       ),
     ])
