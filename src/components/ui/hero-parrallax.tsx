@@ -8,18 +8,21 @@ import { FiClock, FiSettings } from "react-icons/fi";
 
 const ReactPlayer = dynamic(() => import("react-player/lazy"), { ssr: false });
 
+interface SanityAsset {
+  _id: string;
+  url: string;
+  // Add other asset properties you need from Sanity
+}
+
 interface Product {
+  _id: string;
   title: string;
   link: string;
   thumbnail: {
-    asset: {
-      url: string;
-    };
+    asset: SanityAsset;
   };
   imageThumbnail?: {
-    asset: {
-      url: string;
-    };
+    asset: SanityAsset;
   };
 }
 
@@ -35,9 +38,9 @@ interface PlayerState {
   isSeeking: boolean;
 }
 
-export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
+export const HeroParallax = ({ products }: HeroParallaxProps) => {
   const [playerStates, setPlayerStates] = useState<PlayerState[]>(
-    () => products.map(() => ({
+    products.map(() => ({
       playing: false,
       playbackRate: 1,
       progress: 0,
@@ -49,77 +52,61 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
   const players = useRef<(ReactPlayer | null)[]>([]);
 
   const handlePlayPause = useCallback((index: number) => {
-    setPlayerStates(prev => {
-      const newStates = [...prev];
-      newStates[index] = {
-        ...newStates[index],
-        playing: !newStates[index].playing
-      };
-      return newStates;
-    });
+    setPlayerStates(prev => prev.map((state, i) => 
+      i === index ? { ...state, playing: !state.playing } : state
+    ));
     setHasInteracted(true);
   }, []);
 
   const handleSpeedChange = useCallback((index: number) => {
     const rates = [0.5, 1, 1.5, 2];
-    setPlayerStates(prev => {
-      const newStates = [...prev];
-      const currentRate = newStates[index].playbackRate;
-      const currentIndex = rates.indexOf(currentRate);
-      newStates[index].playbackRate = rates[(currentIndex + 1) % rates.length];
-      return newStates;
-    });
+    setPlayerStates(prev => prev.map((state, i) => {
+      if (i !== index) return state;
+      const currentIndex = rates.indexOf(state.playbackRate);
+      return { ...state, playbackRate: rates[(currentIndex + 1) % rates.length] };
+    }));
   }, []);
 
   const handleProgress = useCallback((index: number, playedSeconds: number) => {
     if (!playerStates[index].isSeeking) {
-      setPlayerStates(prev => {
-        const newStates = [...prev];
-        newStates[index].progress = playedSeconds;
-        return newStates;
-      });
+      setPlayerStates(prev => prev.map((state, i) => 
+        i === index ? { ...state, progress: playedSeconds } : state
+      ));
     }
   }, [playerStates]);
 
   const handleDuration = useCallback((index: number, duration: number) => {
-    setPlayerStates(prev => {
-      const newStates = [...prev];
-      newStates[index].duration = duration;
-      return newStates;
-    });
+    setPlayerStates(prev => prev.map((state, i) => 
+      i === index ? { ...state, duration } : state
+    ));
   }, []);
 
   const handleSeek = useCallback((index: number, seconds: number) => {
     players.current[index]?.seekTo(seconds, "seconds");
-    setPlayerStates(prev => {
-      const newStates = [...prev];
-      newStates[index].progress = seconds;
-      return newStates;
-    });
+    setPlayerStates(prev => prev.map((state, i) => 
+      i === index ? { ...state, progress: seconds } : state
+    ));
   }, []);
 
   const handleSeekMouseDown = useCallback((index: number) => {
-    setPlayerStates(prev => {
-      const newStates = [...prev];
-      newStates[index].isSeeking = true;
-      return newStates;
-    });
+    setPlayerStates(prev => prev.map((state, i) => 
+      i === index ? { ...state, isSeeking: true } : state
+    ));
   }, []);
 
   const handleSeekMouseUp = useCallback((index: number, seconds: number) => {
     handleSeek(index, seconds);
-    setPlayerStates(prev => {
-      const newStates = [...prev];
-      newStates[index].isSeeking = false;
-      return newStates;
-    });
+    setPlayerStates(prev => prev.map((state, i) => 
+      i === index ? { ...state, isSeeking: false } : state
+    ));
   }, [handleSeek]);
 
   const formatTime = useCallback((seconds: number) => {
     const date = new Date(seconds * 1000);
+    const isoString = date.toISOString();
     return seconds >= 3600 
-      ? date.toISOString().substr(11, 8)
-      : date.toISOString().substr(14, 5);
+      ? isoString.substring(11, 19) // HH:MM:SS
+      : isoString.substring(14, 19); // MM:SS
   }, []);
 
   return (
@@ -131,14 +118,14 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
             animate={{ opacity: 1, y: 0 }}
             className="text-3xl md:text-5xl font-bold text-orange-500 mb-4"
           >
-          Featured Projects
+            Featured Projects
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto"
           >
-        A collection of my best work — blending storytelling, cinematography, and VFX to create unforgettable visuals.
+            A collection of my best work — blending storytelling, cinematography, and VFX to create unforgettable visuals.
           </motion.p>
         </div>
       </section>
@@ -147,12 +134,12 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
         {products.map((product, index) => {
           const state = playerStates[index];
           const progressPercentage = (state.progress / (state.duration || 1)) * 100;
-          const showCover = product.imageThumbnail?.asset.url && 
-                            (!hasInteracted || !state.playing);
-          
+          const showCover = product.imageThumbnail?.asset?.url && 
+                          (!hasInteracted || !state.playing);
+
           return (
             <motion.div
-              key={index}
+              key={product._id}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "0px 0px -100px 0px" }}
@@ -165,7 +152,8 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
                   <img
                     src={product.imageThumbnail?.asset.url}
                     alt={product.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0 pointer-events-none"
+                    className="absolute inset-0 w-full h-full object-cover z-20 transition-opacity duration-300 pointer-events-none"
+                    style={{ opacity: state.playing ? 0 : 1 }}
                   />
                 )}
 
@@ -184,10 +172,17 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
                   onProgress={({ playedSeconds }) => handleProgress(index, playedSeconds)}
                   onDuration={(duration) => handleDuration(index, duration)}
                   className="absolute inset-0 z-10"
-                  config={{ file: { attributes: { style: { objectFit: 'cover' }, playsInline: true }}}}
+                  config={{ 
+                    file: { 
+                      attributes: { 
+                        playsInline: true,
+                        style: { objectFit: 'cover' }
+                      } 
+                    } 
+                  }}
                 />
 
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent z-20">
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent z-40">
                   <div className="mb-2 relative">
                     <input
                       type="range"
