@@ -1,10 +1,12 @@
-// components/ui/hero-parrallax.tsx
 "use client";
-import React, { useRef, useEffect, useCallback, useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { FaPlay, FaPause, FaArrowRight } from "react-icons/fa";
 import { FiClock, FiSettings } from "react-icons/fi";
+
+const ReactPlayer = dynamic(() => import("react-player/lazy"), { ssr: false });
 
 interface Product {
   title: string;
@@ -13,11 +15,11 @@ interface Product {
     asset: {
       url: string;
     };
-  };
-  imageThumbnail?: {
+    imageThumbnail?: {  // Add this to the Product interface
     asset: {
       url: string;
     };
+  };
   };
 }
 
@@ -25,48 +27,103 @@ interface HeroParallaxProps {
   products: Product[];
 }
 
+interface PlayerState {
+  playing: boolean;
+  playbackRate: number;
+  progress: number;
+  duration: number;
+  isSeeking: boolean;
+}
+
 export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const [playerStates, setPlayerStates] = useState<PlayerState[]>(
+    () => products.map(() => ({
+      playing: false,
+      playbackRate: 1,
+      progress: 0,
+      duration: 0,
+      isSeeking: false
+    }))
+  );
   const [hasInteracted, setHasInteracted] = useState(false);
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const players = useRef<(ReactPlayer | null)[]>([]);
 
-  const handleFirstInteraction = useCallback(() => {
-    if (!hasInteracted) setHasInteracted(true);
-  }, [hasInteracted]);
-
-  useEffect(() => {
-    videoRefs.current.forEach((video, index) => {
-      if (!video) return;
-      if (index === activeIndex && hasInteracted) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
+  const handlePlayPause = useCallback((index: number) => {
+    setPlayerStates(prev => {
+      const newStates = [...prev];
+      newStates[index] = {
+        ...newStates[index],
+        playing: !newStates[index].playing
+      };
+      return newStates;
     });
-  }, [activeIndex, hasInteracted]);
+    setHasInteracted(true);
+  }, []);
 
-  const handleHoverStart = useCallback((index: number) => {
-    if (isMobile || !hasInteracted) return;
-    const video = videoRefs.current[index];
-    if (video) {
-      video.style.opacity = '1';
-      video.play().catch(() => {});
-    }
-  }, [isMobile, hasInteracted]);
+  const handleSpeedChange = useCallback((index: number) => {
+    const rates = [0.5, 1, 1.5, 2];
+    setPlayerStates(prev => {
+      const newStates = [...prev];
+      const currentRate = newStates[index].playbackRate;
+      const currentIndex = rates.indexOf(currentRate);
+      newStates[index].playbackRate = rates[(currentIndex + 1) % rates.length];
+      return newStates;
+    });
+  }, []);
 
-  const handleHoverEnd = useCallback((index: number) => {
-    if (isMobile || !hasInteracted) return;
-    const video = videoRefs.current[index];
-    if (video) {
-      video.pause();
-      video.style.opacity = video.parentElement?.querySelector('img') ? '0' : '1';
+  const handleProgress = useCallback((index: number, playedSeconds: number) => {
+    if (!playerStates[index].isSeeking) {
+      setPlayerStates(prev => {
+        const newStates = [...prev];
+        newStates[index].progress = playedSeconds;
+        return newStates;
+      });
     }
-  }, [isMobile, hasInteracted]);
+  }, [playerStates]);
+
+  const handleDuration = useCallback((index: number, duration: number) => {
+    setPlayerStates(prev => {
+      const newStates = [...prev];
+      newStates[index].duration = duration;
+      return newStates;
+    });
+  }, []);
+
+  const handleSeek = useCallback((index: number, seconds: number) => {
+    players.current[index]?.seekTo(seconds, "seconds");
+    setPlayerStates(prev => {
+      const newStates = [...prev];
+      newStates[index].progress = seconds;
+      return newStates;
+    });
+  }, []);
+
+  const handleSeekMouseDown = useCallback((index: number) => {
+    setPlayerStates(prev => {
+      const newStates = [...prev];
+      newStates[index].isSeeking = true;
+      return newStates;
+    });
+  }, []);
+
+  const handleSeekMouseUp = useCallback((index: number, seconds: number) => {
+    handleSeek(index, seconds);
+    setPlayerStates(prev => {
+      const newStates = [...prev];
+      newStates[index].isSeeking = false;
+      return newStates;
+    });
+  }, [handleSeek]);
+
+  const formatTime = useCallback((seconds: number) => {
+    const date = new Date(seconds * 1000);
+    return seconds >= 3600 
+      ? date.toISOString().substr(11, 8)
+      : date.toISOString().substr(14, 5);
+  }, []);
 
   return (
-    <div id="projects" className="w-full relative bg-black-100 min-h-screen" onClick={handleFirstInteraction}>
+    <div id="projects" className="w-full relative bg-black-100 min-h-screen">
       <section className="relative pt-20 pb-8 px-4 md:pb-12 md:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <motion.h1 
@@ -85,260 +142,139 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
           </motion.p>
         </div>
       </section>
-      <div className="relative pb-24">
-        <div className="md:hidden overflow-x-hidden">
-          <div
-            ref={scrollContainerRef}
-            className="flex overflow-x-auto snap-x scrollbar-hide pb-8"
-            style={{ scrollSnapType: 'x mandatory' }}
-          >
-            {products.map((product, index) => (
-              <div key={`mobile-${index}`} className="flex-shrink-0 w-[85vw] mx-4 snap-center">
-                <VideoCard
-                  product={product}
-                  index={index}
-                  isActive={index === activeIndex}
-                  isMobile={true}
-                  hasInteracted={hasInteracted}
-                  ref={(el) => (videoRefs.current[index] = el)}
+
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 max-w-7xl mx-auto pb-24">
+        {products.map((product, index) => {
+          const state = playerStates[index];
+          const progressPercentage = (state.progress / (state.duration || 1)) * 100;
+          
+          return (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="relative group overflow-hidden rounded-2xl shadow-xl bg-black"
+              whileHover={{ scale: 1.03 }}
+            >
+              <div className="relative w-full aspect-[9/16]">
+                <ReactPlayer
+                  ref={(player) => players.current[index] = player}
+                  url={product.thumbnail.asset.url}
+                  playing={state.playing}
+                  playbackRate={state.playbackRate}
+                  controls={false}
+                  loop
+                  muted={!hasInteracted}
+                  width="100%"
+                  height="100%"
+                  playsinline
+                  onPlay={() => setHasInteracted(true)}
+                  onProgress={({ playedSeconds }) => handleProgress(index, playedSeconds)}
+                  onDuration={(duration) => handleDuration(index, duration)}
+                  className="absolute inset-0"
+                  config={{ file: { attributes: { style: { objectFit: 'cover' }, playsInline: true }}}}
                 />
-              </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="hidden md:block">
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 max-w-7xl mx-auto">
-            {products.map((product, index) => (
-              <motion.div
-                key={`desktop-${index}`}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                onHoverStart={() => handleHoverStart(index)}
-                onHoverEnd={() => handleHoverEnd(index)}
-                className="col-span-1"
-              >
-                <VideoCard
-                  product={product}
-                  index={index}
-                  isActive={index === activeIndex}
-                  isMobile={false}
-                  hasInteracted={hasInteracted}
-                  ref={(el) => (videoRefs.current[index] = el)}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
+                  <div className="mb-2 relative">
+                    <input
+                      type="range"
+                      min={0}
+                      max={state.duration || 1}
+                      value={state.progress}
+                      onChange={(e) => handleSeek(index, parseFloat(e.target.value))}
+                      onMouseDown={() => handleSeekMouseDown(index)}
+                      onMouseUp={(e) => handleSeekMouseUp(index, parseFloat(e.target.value))}
+                      className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer seek-bar"
+                      style={{
+                        background: `linear-gradient(to right, #f97316 ${progressPercentage}%, #374151 ${progressPercentage}%)`
+                      }}
+                    />
+                  </div>
 
-interface VideoCardProps {
-  product: Product;
-  index: number;
-  isActive: boolean;
-  isMobile: boolean;
-  hasInteracted: boolean;
-}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => handlePlayPause(index)}
+                        className="text-white hover:text-orange-500 p-2 transition-colors"
+                        aria-label={state.playing ? "Pause" : "Play"}
+                      >
+                        {state.playing ? (
+                          <FaPause className="w-5 h-5" />
+                        ) : (
+                          <FaPlay className="w-5 h-5" />
+                        )}
+                      </button>
+                      <div className="flex items-center gap-2 text-white text-sm">
+                        <FiClock className="w-4 h-4" />
+                        <span>
+                          {formatTime(state.progress)} / {formatTime(state.duration)}
+                        </span>
+                      </div>
+                    </div>
 
-const VideoCard = React.forwardRef<HTMLVideoElement, VideoCardProps>(
-  ({ product, index, isActive, isMobile, hasInteracted }, ref) => {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [showVideo, setShowVideo] = useState(false);
-    const [playbackRate, setPlaybackRate] = useState(1);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
-    const [isSeeking, setIsSeeking] = useState(false);
-    const localVideoRef = useRef<HTMLVideoElement>(null);
-    const hasImage = !!product.imageThumbnail?.asset?.url;
+                    <button
+                      onClick={() => handleSpeedChange(index)}
+                      className="flex items-center gap-2 text-white text-sm bg-black/50 rounded px-3 py-1 hover:bg-black/70 transition-colors"
+                      aria-label="Change playback speed"
+                    >
+                      <FiSettings className="w-4 h-4" />
+                      <span>{state.playbackRate}x</span>
+                    </button>
+                  </div>
+                </div>
 
-    useEffect(() => {
-      const video = localVideoRef.current;
-      if (!video) return;
-
-      const updateState = () => setIsPlaying(!video.paused);
-      const handleTimeUpdate = () => {
-        if (!isSeeking) setCurrentTime(video.currentTime);
-      };
-      const handleLoadedData = () => setDuration(video.duration);
-
-      video.addEventListener('play', updateState);
-      video.addEventListener('pause', updateState);
-      video.addEventListener('timeupdate', handleTimeUpdate);
-      video.addEventListener('loadeddata', handleLoadedData);
-      
-      return () => {
-        video.removeEventListener('play', updateState);
-        video.removeEventListener('pause', updateState);
-        video.removeEventListener('timeupdate', handleTimeUpdate);
-        video.removeEventListener('loadeddata', handleLoadedData);
-      };
-    }, [isSeeking]);
-
-    const handleVideoClick = () => {
-      const video = localVideoRef.current;
-      if (!video) return;
-      
-      if (video.paused) {
-        setShowVideo(true);
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-        if (hasImage) setShowVideo(false);
-      }
-    };
-
-    const handleSpeedChange = () => {
-      const newSpeed = playbackRate === 2 ? 0.5 : playbackRate + 0.5;
-      if (localVideoRef.current) {
-        localVideoRef.current.playbackRate = newSpeed;
-        setPlaybackRate(newSpeed);
-      }
-    };
-
-    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const video = localVideoRef.current;
-      if (!video) return;
-      const time = Number(e.target.value);
-      video.currentTime = time;
-      setCurrentTime(time);
-    };
-
-    const handleSeekStart = () => {
-      setIsSeeking(true);
-      const video = localVideoRef.current;
-      if (video && !video.paused) video.pause();
-    };
-
-    const handleSeekEnd = () => {
-      setIsSeeking(false);
-      const video = localVideoRef.current;
-      if (video && isPlaying) video.play();
-    };
-
-    const formatTime = (seconds: number) => {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = Math.floor(seconds % 60);
-      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-    };
-
-    return (
-      <motion.div
-        initial={{ scale: 1 }}
-        animate={{ scale: isActive ? 1.03 : 1 }}
-        transition={{ type: "spring", stiffness: 300 }}
-        className="relative group overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl bg-black"
-      >
-        <div className="relative w-full aspect-[9/16]">
-          {hasImage && !showVideo && (
-            <img
-              src={product.imageThumbnail?.asset.url}
-              alt={product.title}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          )}
-
-          <video
-            ref={(node) => {
-              localVideoRef.current = node;
-              if (typeof ref === "function") ref(node);
-              else if (ref) ref.current = node;
-            }}
-            src={product.thumbnail.asset.url}
-            muted={!hasInteracted}
-            loop
-            playsInline
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-              hasImage ? (showVideo ? 'opacity-100' : 'opacity-0') : 'opacity-100'
-            }`}
-            onClick={isMobile ? handleVideoClick : undefined}
-          />
-
-          <div className="absolute bottom-0 left-0 right-0 p-2 space-y-2 bg-gradient-to-t from-black/90 to-transparent">
-            <div className="relative w-full">
-              <input
-                type="range"
-                min="0"
-                max={duration || 0}
-                value={currentTime}
-                onChange={handleSeek}
-                onMouseDown={handleSeekStart}
-                onMouseUp={handleSeekEnd}
-                onTouchStart={handleSeekStart}
-                onTouchEnd={handleSeekEnd}
-                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer absolute top-0"
-                style={{
-                  background: `linear-gradient(to right, #f97316 ${(currentTime / (duration || 1)) * 100}%, #374151 ${(currentTime / (duration || 1)) * 100}%)`
-                }}
-              />
-            </div>
-
-            <div className="flex items-center justify-between px-2">
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={handleVideoClick}
-                  className="text-white hover:text-orange-500 transition-colors p-2"
-                  aria-label={isPlaying ? "Pause" : "Play"}
-                >
-                  {isPlaying ? (
-                    <FaPause className="w-5 h-5" />
-                  ) : (
-                    <FaPlay className="w-5 h-5" />
-                  )}
-                </button>
-
-                <div className="flex items-center space-x-2 text-white text-sm font-mono">
-                  <FiClock className="w-4 h-4" />
-                  <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+                <div className="absolute bottom-20 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                  <h3 className="text-white text-lg font-semibold">
+                    {product.title}
+                  </h3>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={handleSpeedChange}
-                  className="flex items-center space-x-2 px-3 py-1 text-sm text-white bg-black/50 rounded hover:bg-black/70 transition-colors"
-                  aria-label="Playback speed"
+              <Link href={product.link} className="block w-full mt-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors"
                 >
-                  <FiSettings className="w-4 h-4" />
-                  <span>{playbackRate}x</span>
-                </button>
-              </div>
-            </div>
-          </div>
+                  View Full Project <FaArrowRight className="w-4 h-4" />
+                </motion.button>
+              </Link>
+            </motion.div>
+          );
+        })}
+      </div>
 
-          <div className="absolute bottom-20 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-            <motion.h3
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-white text-lg font-semibold"
-            >
-              {product.title}
-            </motion.h3>
-          </div>
-        </div>
+      <style jsx global>{`
+        .seek-bar::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 16px;
+          height: 16px;
+          background: #f97316;
+          border-radius: 50%;
+          cursor: pointer;
+          transition: transform 0.2s;
+        }
 
-        <Link
-          href={product.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full mt-4"
-        >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
-          >
-            <span>View Full Project</span>
-            <FaArrowRight className="w-4 h-4" />
-          </motion.button>
-        </Link>
-      </motion.div>
-    );
-  }
-);
+        .seek-bar::-webkit-slider-thumb:hover {
+          transform: scale(1.2);
+        }
 
-VideoCard.displayName = "VideoCard";
+        .seek-bar::-moz-range-thumb {
+          width: 16px;
+          height: 16px;
+          background: #f97316;
+          border-radius: 50%;
+          cursor: pointer;
+          transition: transform 0.2s;
+        }
+
+        .seek-bar::-moz-range-thumb:hover {
+          transform: scale(1.2);
+        }
+      `}</style>
+    </div>
+  );
+};
