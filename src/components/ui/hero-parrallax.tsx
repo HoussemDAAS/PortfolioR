@@ -50,7 +50,22 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
   );
   const [hasInteracted, setHasInteracted] = useState(false);
   const players = useRef<(ReactPlayer | null)[]>([]);
-
+  const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
+  const handleHoverPlay = useCallback(
+    (index: number, isHovering: boolean) => {
+      if (!hasInteracted) {
+        if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+        
+        hoverTimeout.current = setTimeout(() => {
+          setPlayerStates(prev => prev.map((state, i) => 
+            i === index ? { ...state, playing: isHovering } : state
+          ));
+        }, isHovering ? 300 : 0); // Add slight delay on hover-in
+      }
+    },
+    [hasInteracted]
+  );
+  
   const handlePlayPause = useCallback((index: number) => {
     setPlayerStates(prev => prev.map((state, i) => 
       i === index ? { ...state, playing: !state.playing } : state
@@ -130,8 +145,8 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
         </div>
       </section>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 max-w-7xl mx-auto pb-24">
-        {products.map((product, index) => {
+      <div className="flex snap-x snap-mandatory overflow-x-auto scrollbar-hide space-x-4 px-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 max-w-7xl mx-auto pb-24">     
+      {products.map((product, index) => {
           const state = playerStates[index];
           const progressPercentage = (state.progress / (state.duration || 1)) * 100;
           const showCover = product.imageThumbnail?.asset?.url && 
@@ -139,15 +154,19 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
 
           return (
             <motion.div
-              key={product._id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="relative group overflow-hidden rounded-2xl shadow-xl bg-black"
-              whileHover={{ scale: 1.03 }}
-            >
-              <div className="relative w-full aspect-[9/16]">
+            key={product._id}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+            className="flex-shrink-0 w-[85vw] snap-center md:w-auto relative group overflow-hidden rounded-2xl bg-black"
+            whileHover={{ scale: 1.03 }}
+            onMouseEnter={() => handleHoverPlay(index, true)}
+            onMouseLeave={() => handleHoverPlay(index, false)}
+            onTouchStart={() => handleHoverPlay(index, true)}
+            onTouchEnd={() => handleHoverPlay(index, false)}
+          >
+                  <div className="relative w-full aspect-[9/16]">
                 {showCover && (
                   <img
                     src={product.imageThumbnail?.asset.url}
@@ -157,7 +176,8 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
                   />
                 )}
 
-                <ReactPlayer
+               
+                 <ReactPlayer
                   ref={(player) => players.current[index] = player}
                   url={product.thumbnail.asset.url}
                   playing={state.playing}
@@ -168,7 +188,6 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
                   width="100%"
                   height="100%"
                   playsinline
-                  onPlay={() => setHasInteracted(true)}
                   onProgress={({ playedSeconds }) => handleProgress(index, playedSeconds)}
                   onDuration={(duration) => handleDuration(index, duration)}
                   className="absolute inset-0 z-10"
