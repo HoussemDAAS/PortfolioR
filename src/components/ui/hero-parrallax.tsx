@@ -55,28 +55,39 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
 
   // Initialize audio context and attempt auto-play
   useEffect(() => {
+    const handleFirstInteraction = () => {
+      setHasInteracted(true);
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  
+    // Try to automatically enable audio
     const enableAudio = async () => {
       try {
-        // Create silent audio buffer
+        // Create and play silent audio buffer
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const buffer = audioContext.createBuffer(1, 1, 22050);
         const source = audioContext.createBufferSource();
         source.buffer = buffer;
         source.connect(audioContext.destination);
-        source.start();
+        source.start(0);
         
-        // Set interaction flag if audio plays successfully
+        // Immediately enable interactions
         setHasInteracted(true);
         audioContextRef.current = audioContext;
       } catch (error) {
-        console.log("Auto-play with sound failed, waiting for user interaction");
+        // Fallback to click/touch listener
+        document.addEventListener('click', handleFirstInteraction);
+        document.addEventListener('touchstart', handleFirstInteraction);
       }
     };
-
+  
     enableAudio();
-
+  
     return () => {
       audioContextRef.current?.close();
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
     };
   }, []);
 
