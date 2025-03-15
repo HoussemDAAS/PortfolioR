@@ -15,11 +15,11 @@ interface Product {
     asset: {
       url: string;
     };
-    imageThumbnail?: {  // Add this to the Product interface
+  };
+  imageThumbnail?: {
     asset: {
       url: string;
     };
-  };
   };
 }
 
@@ -131,14 +131,14 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
             animate={{ opacity: 1, y: 0 }}
             className="text-3xl md:text-5xl font-bold text-orange-500 mb-4"
           >
-            Aerial Visual Stories
+          Featured Projects
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto"
           >
-            Cinematic moments captured from above
+        A collection of my best work — blending storytelling, cinematography, and VFX to create unforgettable visuals.
           </motion.p>
         </div>
       </section>
@@ -147,6 +147,8 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
         {products.map((product, index) => {
           const state = playerStates[index];
           const progressPercentage = (state.progress / (state.duration || 1)) * 100;
+          const showCover = product.imageThumbnail?.asset.url && 
+                            (!hasInteracted || !state.playing);
           
           return (
             <motion.div
@@ -159,6 +161,14 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
               whileHover={{ scale: 1.03 }}
             >
               <div className="relative w-full aspect-[9/16]">
+                {showCover && (
+                  <img
+                    src={product.imageThumbnail?.asset.url}
+                    alt={product.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0 pointer-events-none"
+                  />
+                )}
+
                 <ReactPlayer
                   ref={(player) => players.current[index] = player}
                   url={product.thumbnail.asset.url}
@@ -173,11 +183,11 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
                   onPlay={() => setHasInteracted(true)}
                   onProgress={({ playedSeconds }) => handleProgress(index, playedSeconds)}
                   onDuration={(duration) => handleDuration(index, duration)}
-                  className="absolute inset-0"
+                  className="absolute inset-0 z-10"
                   config={{ file: { attributes: { style: { objectFit: 'cover' }, playsInline: true }}}}
                 />
 
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent z-20">
                   <div className="mb-2 relative">
                     <input
                       type="range"
@@ -226,7 +236,7 @@ export const HeroParallax: React.FC<HeroParallaxProps> = ({ products }) => {
                   </div>
                 </div>
 
-                <div className="absolute bottom-20 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                <div className="absolute bottom-20 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent z-30">
                   <h3 className="text-white text-lg font-semibold">
                     {product.title}
                   </h3>
