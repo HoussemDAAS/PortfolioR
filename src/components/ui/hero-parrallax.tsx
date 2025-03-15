@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -51,6 +51,34 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
   );
   const [hasInteracted, setHasInteracted] = useState(false);
   const players = useRef<(ReactPlayer | null)[]>([]);
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  // Initialize audio context and attempt auto-play
+  useEffect(() => {
+    const enableAudio = async () => {
+      try {
+        // Create silent audio buffer
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const buffer = audioContext.createBuffer(1, 1, 22050);
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioContext.destination);
+        source.start();
+        
+        // Set interaction flag if audio plays successfully
+        setHasInteracted(true);
+        audioContextRef.current = audioContext;
+      } catch (error) {
+        console.log("Auto-play with sound failed, waiting for user interaction");
+      }
+    };
+
+    enableAudio();
+
+    return () => {
+      audioContextRef.current?.close();
+    };
+  }, []);
 
   const handleHoverPlay = useCallback((index: number) => {
     setPlayerStates(prev => prev.map((state, i) => {
@@ -138,6 +166,32 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
 
   return (
     <div id="projects" className="w-full relative bg-black-100 min-h-screen">
+      {/* Audio Permission Overlay */}
+      {!hasInteracted && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="text-center p-8 max-w-2xl"
+          >
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8">
+              <h2 className="text-2xl font-bold text-orange-500 mb-4">
+                Enable Audio Experience
+              </h2>
+              <p className="text-gray-300 mb-6">
+                Click the button below to enable audio playback for immersive video experiences.
+              </p>
+              <button
+                onClick={() => setHasInteracted(true)}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-8 rounded-lg transition-colors"
+              >
+                Enable Sound
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       <section className="relative pt-20 pb-8 px-4 md:pb-12 md:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <motion.h1 
@@ -197,7 +251,6 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
                   width="100%"
                   height="100%"
                   playsinline
-                  onPlay={() => setHasInteracted(true)}
                   onProgress={({ playedSeconds }) => handleProgress(index, playedSeconds)}
                   onDuration={(duration) => handleDuration(index, duration)}
                   className="absolute inset-0 z-10"
