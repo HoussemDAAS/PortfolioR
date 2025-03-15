@@ -211,8 +211,7 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
         </div>
       </section>
 
-      <div className="flex snap-x snap-mandatory overflow-x-auto scrollbar-hide space-x-4 px-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 max-w-7xl mx-auto pb-24">
-        {products.map((product, index) => {
+      <div className="flex snap-x snap-mandatory overflow-x-auto scrollbar-hide space-x-4 px-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 max-w-7xl mx-auto pb-24">        {products.map((product, index) => {
           const state = playerStates[index];
           const progressPercentage = (state.progress / (state.duration || 1)) * 100;
           const showCover = product.imageThumbnail?.asset?.url && 
@@ -220,17 +219,17 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
 
           return (
             <motion.div
-              key={product._id}
+            key={product._id}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "0px 0px -100px 0px" }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="flex-shrink-0 w-[85vw] snap-center md:w-auto relative group overflow-hidden rounded-2xl shadow-xl bg-black"
-              whileHover={{ scale: 1.03 }}
+              
+              className="flex-shrink-0 w-[85vw] snap-center md:w-full relative group overflow-hidden rounded-2xl shadow-xl bg-black"              whileHover={{ scale: 1.03 }}
               onMouseEnter={() => handleHoverPlay(index)}
               onMouseLeave={() => handleHoverPause(index)}
             >
-              <div className="relative w-full aspect-[9/16]">
+  <div className="relative w-full aspect-[9/16]">
                 {showCover && (
                   <img
                     src={product.imageThumbnail?.asset.url}
