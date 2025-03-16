@@ -353,11 +353,7 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
     }
   }
     
-    // Add container style
-    .overflow-x-auto {
-      padding-right: 20px;
-      margin-right: -20px;
-    }
+  
   }
 `}</style>
     </div>
