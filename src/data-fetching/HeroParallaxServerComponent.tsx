@@ -2,10 +2,12 @@
 
 import { HeroParallax } from "@/components/ui/hero-parrallax";
 import { client } from "@/sanity/lib/client";
+
 const ProductParallaxServerComponent = async () => {
-  const products = await client.fetch(`*[_type == "product"]{
+  const products = await client.fetch(`*[_type == "product"] | order(orderRank) {
     title,
     link,
+    orderRank,
     thumbnail{
       asset->{
         url
@@ -17,6 +19,7 @@ const ProductParallaxServerComponent = async () => {
       }
     }
   }`);
+
   return <HeroParallax products={products} />;
 };
 
