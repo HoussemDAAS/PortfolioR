@@ -95,15 +95,23 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
   }, []);
   const handlePlayPause = useCallback((index: number) => {
     setPlayerStates(prev => {
-      const newStates = [...prev];
-      if (newStates[index]) {
-        // Force playing state to true on first click
-        newStates[index].playing = true;
-        newStates[index].isPlayingFromHover = false;
-      }
+      const newStates = prev.map((state, i) => {
+        if (i === index) {
+          return {
+            ...state,
+            playing: !state.playing, // Toggle playing state for the clicked video
+            isPlayingFromHover: false,
+          };
+        } else {
+          return {
+            ...state,
+            playing: false, // Pause all other videos
+          };
+        }
+      });
       return newStates;
     });
-    
+  
     // Force interaction on first click
     if (!hasInteracted) {
       setHasInteracted(true);
@@ -215,6 +223,7 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
                     alt={product.title}
                     className="absolute inset-0 w-full h-full object-cover z-20 transition-opacity duration-300 pointer-events-none"
                     style={{ opacity: state.playing ? 0 : 1 }}
+                    loading="lazy"
                   />
                 )}
 
@@ -228,6 +237,7 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
                     muted={!hasInteracted}
                     width="100%"
                     height="100%"
+              
                     playsinline
                     onProgress={({ playedSeconds }) => handleProgress(index, playedSeconds)}
                     onDuration={(duration) => handleDuration(index, duration)}
