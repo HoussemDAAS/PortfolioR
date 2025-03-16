@@ -17,6 +17,7 @@
     "@sanity/client": "^6.28.3",
     "@sanity/icons": "^3.5.7",
     "@sanity/image-url": "^1.1.0",
+    "@sanity/orderable-document-list": "^1.2.3",
     "@sanity/vision": "^3.70.0",
     "@studio-freight/lenis": "^1.0.42",
     "@types/react-toastify": "^4.0.2",

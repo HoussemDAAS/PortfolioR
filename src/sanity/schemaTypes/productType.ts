@@ -6,6 +6,13 @@ export const productType = defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'orderRank',
+      title: 'Order Rank',
+      type: 'string',
+      hidden: true, // Hide from content editors
+    }),
+
+    defineField({
       name: 'title',
       title: 'Title',
       type: 'string',

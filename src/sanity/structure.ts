@@ -1,14 +1,20 @@
 // structure.ts
 import type {StructureResolver} from 'sanity/structure'
-
-export const structure: StructureResolver = (S) =>
+import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list'
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .title('Customize your content')
     .items([
       S.documentTypeListItem('hero').title('Hero').icon(() => '🦸‍♂️'),
       S.documentTypeListItem('logo').title('Companies that trust you').icon(() => '🖼️'),
       S.documentTypeListItem('intro').title('Intro').icon(() => '📝'),
-      S.documentTypeListItem('product').title('Projects').icon(() => '📦'),
+      orderableDocumentListDeskItem({
+        type: 'product',
+        title: 'Projects', // Keep your custom title
+        S,
+        context,
+        icon: () => '📦', // Keep your icon
+      }),
       S.documentTypeListItem('tape').title('Tape').icon(() => '📼'),
       S.documentTypeListItem('feature').title('Feature').icon(() => '🔥'),
       S.documentTypeListItem('testimonial').title('Testimonials').icon(() => '💬'),

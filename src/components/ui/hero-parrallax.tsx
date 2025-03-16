@@ -51,49 +51,30 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
   );
   const [hasInteracted, setHasInteracted] = useState(false);
   const players = useRef<(ReactPlayer | null)[]>([]);
-  const audioContextRef = useRef<AudioContext | null>(null);
+  const interactionDetected = useRef(false);
 
-  // Initialize audio context and attempt auto-play
   useEffect(() => {
     const handleFirstInteraction = () => {
-      setHasInteracted(true);
-      document.removeEventListener('click', handleFirstInteraction);
-      document.removeEventListener('touchstart', handleFirstInteraction);
-    };
-  
-    // Try to automatically enable audio
-    const enableAudio = async () => {
-      try {
-        // Create and play silent audio buffer
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const buffer = audioContext.createBuffer(1, 1, 22050);
-        const source = audioContext.createBufferSource();
-        source.buffer = buffer;
-        source.connect(audioContext.destination);
-        source.start(0);
-        
-        // Immediately enable interactions
+      if (!interactionDetected.current) {
         setHasInteracted(true);
-        audioContextRef.current = audioContext;
-      } catch (error) {
-        // Fallback to click/touch listener
-        document.addEventListener('click', handleFirstInteraction);
-        document.addEventListener('touchstart', handleFirstInteraction);
+        interactionDetected.current = true;
+        document.removeEventListener("mousemove", handleFirstInteraction);
+        document.removeEventListener("touchstart", handleFirstInteraction);
       }
     };
-  
-    enableAudio();
-  
+
+    document.addEventListener("mousemove", handleFirstInteraction);
+    document.addEventListener("touchstart", handleFirstInteraction);
+
     return () => {
-      audioContextRef.current?.close();
-      document.removeEventListener('click', handleFirstInteraction);
-      document.removeEventListener('touchstart', handleFirstInteraction);
+      document.removeEventListener("mousemove", handleFirstInteraction);
+      document.removeEventListener("touchstart", handleFirstInteraction);
     };
   }, []);
 
   const handleHoverPlay = useCallback((index: number) => {
     setPlayerStates(prev => prev.map((state, i) => {
-      if (i !== index || state.playing) return state;
+      if (i !== index || state?.playing) return state;
       return {
         ...state,
         playing: true,
@@ -104,7 +85,7 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
 
   const handleHoverPause = useCallback((index: number) => {
     setPlayerStates(prev => prev.map((state, i) => {
-      if (i !== index || !state.isPlayingFromHover) return state;
+      if (i !== index || !state?.isPlayingFromHover) return state;
       return {
         ...state,
         playing: false,
@@ -117,27 +98,33 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
     setPlayerStates(prev => prev.map((state, i) => 
       i === index ? { 
         ...state, 
-        playing: !state.playing,
+        playing: !state?.playing,
         isPlayingFromHover: false
       } : state
     ));
-    setHasInteracted(true);
   }, []);
 
   const handleSpeedChange = useCallback((index: number) => {
     const rates = [0.5, 1, 1.5, 2];
     setPlayerStates(prev => prev.map((state, i) => {
       if (i !== index) return state;
-      const currentIndex = rates.indexOf(state.playbackRate);
-      return { ...state, playbackRate: rates[(currentIndex + 1) % rates.length] };
+      const currentIndex = rates.indexOf(state?.playbackRate ?? 1);
+      return { 
+        ...state, 
+        playbackRate: rates[(currentIndex + 1) % rates.length] 
+      };
     }));
   }, []);
 
   const handleProgress = useCallback((index: number, playedSeconds: number) => {
-    if (!playerStates[index].isSeeking) {
-      setPlayerStates(prev => prev.map((state, i) => 
-        i === index ? { ...state, progress: playedSeconds } : state
-      ));
+    if (!playerStates[index]?.isSeeking) {
+      setPlayerStates(prev => {
+        const newStates = [...prev];
+        if (newStates[index]) {
+          newStates[index].progress = playedSeconds;
+        }
+        return newStates;
+      });
     }
   }, [playerStates]);
 
@@ -168,7 +155,7 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
   }, [handleSeek]);
 
   const formatTime = useCallback((seconds: number) => {
-    const date = new Date(seconds * 1000);
+    const date = new Date((seconds || 0) * 1000);
     const isoString = date.toISOString();
     return seconds >= 3600 
       ? isoString.substring(11, 19)
@@ -177,32 +164,6 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
 
   return (
     <div id="projects" className="w-full relative bg-black-100 min-h-screen">
-      {/* Audio Permission Overlay */}
-      {!hasInteracted && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="text-center p-8 max-w-2xl"
-          >
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8">
-              <h2 className="text-2xl font-bold text-orange-500 mb-4">
-                Enable Audio Experience
-              </h2>
-              <p className="text-gray-300 mb-6">
-                Click the button below to enable audio playback for immersive video experiences.
-              </p>
-              <button
-                onClick={() => setHasInteracted(true)}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-8 rounded-lg transition-colors"
-              >
-                Enable Sound
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-
       <section className="relative pt-20 pb-8 px-4 md:pb-12 md:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <motion.h1 
@@ -222,25 +183,25 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
         </div>
       </section>
 
-      <div className="flex snap-x snap-mandatory overflow-x-auto scrollbar-hide space-x-4 px-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 max-w-7xl mx-auto pb-24">        {products.map((product, index) => {
-          const state = playerStates[index];
-          const progressPercentage = (state.progress / (state.duration || 1)) * 100;
-          const showCover = product.imageThumbnail?.asset?.url && 
-                          (!hasInteracted || !state.playing);
+      <div className="flex snap-x snap-mandatory overflow-x-auto scrollbar-hide space-x-4 px-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 max-w-7xl mx-auto pb-24">
+        {products.map((product, index) => {
+          const state = playerStates[index] || {};
+          const progressPercentage = ((state.progress || 0) / (state.duration || 1)) * 100;
+          const showCover = product.imageThumbnail?.asset?.url && !state.playing;
 
           return (
             <motion.div
-            key={product._id}
+              key={product._id}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "0px 0px -100px 0px" }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              
-              className="flex-shrink-0 w-[85vw] snap-center md:w-full relative group overflow-hidden rounded-2xl shadow-xl bg-black"              whileHover={{ scale: 1.03 }}
+              className="flex-shrink-0 w-[85vw] snap-center md:w-full relative group overflow-hidden rounded-2xl shadow-xl bg-black"
+              whileHover={{ scale: 1.03 }}
               onMouseEnter={() => handleHoverPlay(index)}
               onMouseLeave={() => handleHoverPause(index)}
             >
-  <div className="relative w-full aspect-[9/16]">
+              <div className="relative w-full aspect-[9/16]">
                 {showCover && (
                   <img
                     src={product.imageThumbnail?.asset.url}
@@ -254,7 +215,7 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
                   ref={(player) => players.current[index] = player}
                   url={product.thumbnail.asset.url}
                   playing={state.playing}
-                  playbackRate={state.playbackRate}
+                  playbackRate={state.playbackRate || 1}
                   controls={false}
                   loop
                   muted={!hasInteracted}
@@ -280,7 +241,7 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
                       type="range"
                       min={0}
                       max={state.duration || 1}
-                      value={state.progress}
+                      value={state.progress || 0}
                       onChange={(e) => handleSeek(index, parseFloat(e.target.value))}
                       onMouseDown={() => handleSeekMouseDown(index)}
                       onMouseUp={(e) => handleSeekMouseUp(index, parseFloat(e.target.value))}
