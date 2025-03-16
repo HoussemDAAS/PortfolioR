@@ -93,18 +93,23 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
       };
     }));
   }, []);
-
   const handlePlayPause = useCallback((index: number) => {
     setPlayerStates(prev => {
       const newStates = [...prev];
       if (newStates[index]) {
-        newStates[index].playing = !newStates[index].playing;
+        // Force playing state to true on first click
+        newStates[index].playing = true;
         newStates[index].isPlayingFromHover = false;
       }
       return newStates;
     });
-    setHasInteracted(true);
-  }, []);
+    
+    // Force interaction on first click
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      players.current[index]?.getInternalPlayer()?.play(); // Directly trigger play
+    }
+  }, [hasInteracted]);
 
   const handleSpeedChange = useCallback((index: number) => {
     const rates = [0.5, 1, 1.5, 2];
@@ -256,17 +261,20 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
 
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-4">
-                      <button
-                        onClick={() => handlePlayPause(index)}
-                        className="text-white hover:text-orange-500 p-2 transition-colors"
-                        aria-label={state.playing ? "Pause" : "Play"}
-                      >
-                        {state.playing ? (
-                          <FaPause className="w-5 h-5" />
-                        ) : (
-                          <FaPlay className="w-5 h-5" />
-                        )}
-                      </button>
+                    <button
+  onClick={(e) => {
+    e.preventDefault();
+    handlePlayPause(index);
+  }}
+  className="text-white hover:text-orange-500 p-2 transition-colors"
+  aria-label={state.playing ? "Pause" : "Play"}
+>
+  {state.playing ? (
+    <FaPause className="w-5 h-5" />
+  ) : (
+    <FaPlay className="w-5 h-5" />
+  )}
+</button>
                       <div className="flex items-center gap-2 text-white text-sm">
                         <FiClock className="w-4 h-4" />
                         <span>
