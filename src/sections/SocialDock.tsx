@@ -41,15 +41,24 @@ const SocialPortal = () => {
       dragElastic={0.1}
       dragMomentum={false}
     >
-      <motion.div
-        className="relative flex flex-col items-end gap-4"
-        initial={false}
-        animate={isOpen ? "open" : "closed"}
-      >
+      <motion.div className="relative flex flex-col items-end gap-4">
+        <AnimatePresence>
+          {!isOpen && (
+            <motion.span
+              className="absolute bottom-full right-0 px-3 py-1 text-sm font-medium text-white rounded-lg shadow-lg backdrop-blur-lg bg-black-900/80 mb-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+            >
+              Social Media
+            </motion.span>
+          )}
+        </AnimatePresence>
+
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              className="absolute bottom-full right-0 flex flex-col gap-3 mb-4"
+              className="absolute bottom-full right-0 flex flex-col gap-3 mb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}

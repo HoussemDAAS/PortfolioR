@@ -74,7 +74,7 @@ export const logos = [
 
 const Features: React.FC<FeaturesProps> = ({ featuresData }) => {
   return (
-    <section className="py-16">
+    <section className="py-5">
       <div className="container">
         <div className="md:px-20 lg:px-40">
           {/* Animated Header Section */}

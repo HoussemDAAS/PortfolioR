@@ -89,7 +89,7 @@ const Contact: FC = () => {
       });
 
       toast.custom((t) => (
-        <div className="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center gap-2">
+        <div className="bg-green-500 text-white px-6  rounded-lg flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5"

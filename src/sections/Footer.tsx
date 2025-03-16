@@ -43,7 +43,7 @@ const Footer: FC = () => {
       label: "Projects",
     },
     {
-      href: "#Testimonials",
+      href: "#testimonials",
       label: "Testimonials",
     },
   

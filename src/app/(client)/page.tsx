@@ -21,11 +21,11 @@ export default function Home() {
       <div className="flex flex-col gap-16 md:gap-24">
         <AnimatedSection>
           <LogoTickerServerComponent />
-        </AnimatedSection>
-
-        <AnimatedSection>
           <IntroServerComponent />
         </AnimatedSection>
+
+        {/* <AnimatedSection>
+        </AnimatedSection> */}
         <AnimatedSection>
           <TapeServerComponent />
         </AnimatedSection>

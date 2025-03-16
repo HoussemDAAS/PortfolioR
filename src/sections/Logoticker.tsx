@@ -17,7 +17,7 @@ interface LogoTickerProps {
 }
 const LogoTicker: React.FC<LogoTickerProps> = ({ logos }) => {
   return (
-    <section className="py-24 overflow-x-clip">
+    <section className="pt-[60px] md:py-[60px] overflow-x-clip">
       <div className="container">
         <h3 className="text-center text-orange-500 uppercase font-semibold tracking-widest text-xl">
           Already trusted by these companies

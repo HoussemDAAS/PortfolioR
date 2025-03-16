@@ -8,8 +8,8 @@ export const links = [
         href: "#projects"
     },
     {
-        title: "Social media",
-        href: "#social-media"
+        title: "Testimonials",
+        href: "#testimonials"
     },
     {
         title: "Contact",

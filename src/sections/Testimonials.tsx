@@ -75,7 +75,7 @@ const Testimonials: FC = () => {
   if (loading) return <div className="text-gray-500 p-8">Loading...</div>;
 
   return (
-    <div className="py-16 lg:py-24" id="testimonials">
+    <div className=" lg:py-18" id="testimonials">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
