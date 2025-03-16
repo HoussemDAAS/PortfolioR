@@ -97,15 +97,20 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
     setPlayerStates(prev => {
       const newStates = prev.map((state, i) => {
         if (i === index) {
-          return {
-            ...state,
-            playing: !state.playing, // Toggle playing state for the clicked video
-            isPlayingFromHover: false,
-          };
+          // Only start the video if it's not already playing
+          if (!state.playing) {
+            return {
+              ...state,
+              playing: true,
+              isPlayingFromHover: false,
+            };
+          }
+          return state; // No change if it's already playing
         } else {
+          // Pause all other videos
           return {
             ...state,
-            playing: false, // Pause all other videos
+            playing: false,
           };
         }
       });
