@@ -95,13 +95,15 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
   }, []);
 
   const handlePlayPause = useCallback((index: number) => {
-    setPlayerStates(prev => prev.map((state, i) => 
-      i === index ? { 
-        ...state, 
-        playing: !state?.playing,
-        isPlayingFromHover: false
-      } : state
-    ));
+    setPlayerStates(prev => {
+      const newStates = [...prev];
+      if (newStates[index]) {
+        newStates[index].playing = !newStates[index].playing;
+        newStates[index].isPlayingFromHover = false;
+      }
+      return newStates;
+    });
+    setHasInteracted(true);
   }, []);
 
   const handleSpeedChange = useCallback((index: number) => {
@@ -196,12 +198,12 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "0px 0px -100px 0px" }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
-  className="flex-shrink-0 w-[85vw] snap-center md:w-full relative group overflow-visible rounded-2xl shadow-xl bg-black mobile-scroll-indicator"
+  className="flex-shrink-0 w-[85vw] snap-center md:w-full relative group overflow-visible rounded-2xl bg-black mobile-scroll-indicator"
             whileHover={{ scale: 1.03 }}
             onMouseEnter={() => handleHoverPlay(index)}
             onMouseLeave={() => handleHoverPause(index)}
           >
-              <div className="relative w-full aspect-[9/16]">
+              <div className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden">
                 {showCover && (
                   <img
                     src={product.imageThumbnail?.asset.url}
@@ -211,29 +213,29 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
                   />
                 )}
 
-                <ReactPlayer
-                  ref={(player) => players.current[index] = player}
-                  url={product.thumbnail.asset.url}
-                  playing={state.playing}
-                  playbackRate={state.playbackRate || 1}
-                  controls={false}
-                  loop
-                  muted={!hasInteracted}
-                  width="100%"
-                  height="100%"
-                  playsinline
-                  onProgress={({ playedSeconds }) => handleProgress(index, playedSeconds)}
-                  onDuration={(duration) => handleDuration(index, duration)}
-                  className="absolute inset-0 z-10"
-                  config={{ 
-                    file: { 
-                      attributes: { 
-                        playsInline: true,
-                        style: { objectFit: 'cover' }
+<ReactPlayer
+                    ref={(player) => players.current[index] = player}
+                    url={product.thumbnail.asset.url}
+                    playing={state.playing}
+                    playbackRate={state.playbackRate || 1}
+                    controls={false}
+                    loop
+                    muted={!hasInteracted}
+                    width="100%"
+                    height="100%"
+                    playsinline
+                    onProgress={({ playedSeconds }) => handleProgress(index, playedSeconds)}
+                    onDuration={(duration) => handleDuration(index, duration)}
+                    className="absolute inset-0 z-10"
+                    config={{ 
+                      file: { 
+                        attributes: { 
+                          playsInline: true,
+                          style: { objectFit: 'cover' }
+                        } 
                       } 
-                    } 
-                  }}
-                />
+                    }}
+                  />
 
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent z-40">
                   <div className="mb-2 relative">

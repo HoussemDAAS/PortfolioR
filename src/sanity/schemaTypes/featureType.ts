@@ -25,5 +25,15 @@ export const featureType = defineType({
         title: 'Text3',
         type: 'string',
       }),
+      defineField({
+        name: 'text4',
+        title: 'Text4',
+        type: 'string',
+      }),
+      defineField({
+        name: 'text5',
+        title: 'Text5',
+        type: 'string',
+      }),
   ],
 });

@@ -21,9 +21,11 @@ interface Feature {
   text1: string;
   text2: string;
   text3: string;
+  text4: string;
+  text5: string;
 }
 
-export const features = ["TEXXT 1", "TEXT 20", "TEXT 3"];
+
 
 interface FeaturesProps {
   featuresData: Feature;
@@ -99,18 +101,18 @@ const Features: React.FC<FeaturesProps> = ({ featuresData }) => {
                 {featuresData.title}
               </h2>
               <ul className="mt-12 flex flex-col gap-8">
-                {[featuresData.text1, featuresData.text2, featuresData.text3].map(
-                  (text, index) => (
-                    <li key={index} className="flex items-center gap-4">
-                      <FontAwesomeIcon
-                        icon={faCircleCheck}
-                        className="text-orange-500 size-6"
-                      />
-                      <span className="text-xl font-medium">{text}</span>
-                    </li>
-                  )
-                )}
-              </ul>
+  {[featuresData.text1, featuresData.text2, featuresData.text3, featuresData.text4, featuresData.text5]
+    .filter(text => text && text.trim() !== "") // Filter out empty texts
+    .map((text, index) => (
+      <li key={index} className="flex items-center gap-4">
+        <FontAwesomeIcon
+          icon={faCircleCheck}
+          className="text-orange-500 size-6"
+        />
+        <span className="text-xl font-medium">{text}</span>
+      </li>
+    ))}
+</ul>
             </div>
             
             <div className="flex justify-center">
