@@ -334,19 +334,24 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
   }
 
   /* Mobile scroll indicator */
-  @media (max-width: 768px) {
+   @media (max-width: 768px) {
     .mobile-scroll-indicator:not(:last-child)::after {
-      content: '→';
+      content: '';
       position: absolute;
-      right: -15px;  // Adjusted from -35px
+      right: -20px;
       top: 50%;
       transform: translateY(-50%);
-      color: rgba(249, 115, 22, 0.9);  // Increased opacity
-      font-size: 3rem;  // Increased size
+      width: 57px;
+      height: 57px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23f97316'%3E%3Cpath d='M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8.009 8.009 0 0 1-8 8z'/%3E%3Cpath d='M8.707 7.293 7.293 8.707 10.586 12l-3.293 3.293 1.414 1.414L13.414 12 8.707 7.293z'/%3E%3Cpath d='M11.293 8.707 14.586 12l-3.293 3.293 1.414 1.414L17.414 12l-4.707-4.707-1.414 1.414z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: contain;
+      opacity: 0.9;
       pointer-events: none;
-      z-index: 50;  // Increased z-index
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      z-index: 50;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     }
+  }
     
     // Add container style
     .overflow-x-auto {
