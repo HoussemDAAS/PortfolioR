@@ -183,7 +183,7 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
         </div>
       </section>
 
-      <div className="flex snap-x snap-mandatory overflow-x-auto scrollbar-hide space-x-4 px-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 max-w-7xl mx-auto pb-24">
+      <div className="flex snap-x snap-mandatory overflow-x-auto scrollbar-hide space-x-8 px-6 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 max-w-7xl mx-auto pb-24 md:space-x-0">
         {products.map((product, index) => {
           const state = playerStates[index] || {};
           const progressPercentage = ((state.progress || 0) / (state.duration || 1)) * 100;
@@ -191,16 +191,16 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
 
           return (
             <motion.div
-              key={product._id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="flex-shrink-0 w-[85vw] snap-center md:w-full relative group overflow-hidden rounded-2xl shadow-xl bg-black"
-              whileHover={{ scale: 1.03 }}
-              onMouseEnter={() => handleHoverPlay(index)}
-              onMouseLeave={() => handleHoverPause(index)}
-            >
+            key={product._id}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+  className="flex-shrink-0 w-[85vw] snap-center md:w-full relative group overflow-visible rounded-2xl shadow-xl bg-black mobile-scroll-indicator"
+            whileHover={{ scale: 1.03 }}
+            onMouseEnter={() => handleHoverPlay(index)}
+            onMouseLeave={() => handleHoverPause(index)}
+          >
               <div className="relative w-full aspect-[9/16]">
                 {showCover && (
                   <img
@@ -305,34 +305,56 @@ export const HeroParallax = ({ products }: HeroParallaxProps) => {
         })}
       </div>
 
-      <style jsx global>{`
-        .seek-bar::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          width: 16px;
-          height: 16px;
-          background: #f97316;
-          border-radius: 50%;
-          cursor: pointer;
-          transition: transform 0.2s;
-        }
+  <style jsx global>{`
+  .seek-bar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #f97316;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
 
-        .seek-bar::-webkit-slider-thumb:hover {
-          transform: scale(1.2);
-        }
+  .seek-bar::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
 
-        .seek-bar::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
-          background: #f97316;
-          border-radius: 50%;
-          cursor: pointer;
-          transition: transform 0.2s;
-        }
+  .seek-bar::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #f97316;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
 
-        .seek-bar::-moz-range-thumb:hover {
-          transform: scale(1.2);
-        }
-      `}</style>
+  .seek-bar::-moz-range-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  /* Mobile scroll indicator */
+  @media (max-width: 768px) {
+    .mobile-scroll-indicator:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -15px;  // Adjusted from -35px
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(249, 115, 22, 0.9);  // Increased opacity
+      font-size: 3rem;  // Increased size
+      pointer-events: none;
+      z-index: 50;  // Increased z-index
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    // Add container style
+    .overflow-x-auto {
+      padding-right: 20px;
+      margin-right: -20px;
+    }
+  }
+`}</style>
     </div>
   );
 };
