@@ -133,7 +133,7 @@ const Footer: FC = () => {
           Copyright &copy;{" "}
           <Button variant={"text"} className="text-sm text-white/40">
             {" "}
-            Daas Houssem{" "}
+            Rayen el maamoun{" "}
           </Button>
           &bull; All rights reserved
         </p>
